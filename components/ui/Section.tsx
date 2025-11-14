@@ -1,11 +1,11 @@
 'use client';
 
 import { HTMLAttributes, ReactNode, useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, HTMLMotionProps } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { fadeInUp, useShouldReduceMotion, isMobileDevice, getAnimationDuration } from '@/lib/animations';
 
-export interface SectionProps extends HTMLAttributes<HTMLElement> {
+export interface SectionProps extends Omit<HTMLAttributes<HTMLElement>, 'onDrag' | 'onDragStart' | 'onDragEnd'> {
   id?: string;
   children: ReactNode;
   className?: string;
@@ -29,7 +29,7 @@ export function Section({ id, children, className, containerClassName, ...props 
       variants={fadeInUp}
       custom={{ duration: duration / 1000 }}
       style={{ willChange: reduceMotion ? 'auto' : 'transform, opacity' }}
-      {...props}
+      {...(props as Omit<HTMLMotionProps<'section'>, 'ref' | 'id' | 'className' | 'initial' | 'animate' | 'variants' | 'custom' | 'style'>)}
     >
       <div className={cn('container mx-auto px-4 sm:px-6 lg:px-8', containerClassName)}>
         {children}

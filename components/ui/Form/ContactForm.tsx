@@ -33,7 +33,7 @@ export function ContactForm({ className }: { className?: string }) {
           required
           placeholder="Votre nom"
           value={formData.name}
-          onChange={(e) => updateField('name', e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => updateField('name', e.target.value)}
           error={errors.name}
         />
 
@@ -44,7 +44,7 @@ export function ContactForm({ className }: { className?: string }) {
           required
           placeholder="votre@email.com"
           value={formData.email}
-          onChange={(e) => updateField('email', e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => updateField('email', e.target.value)}
           error={errors.email}
         />
 
@@ -54,7 +54,7 @@ export function ContactForm({ className }: { className?: string }) {
           type="tel"
           placeholder="+32 XXX XX XX XX"
           value={formData.phone}
-          onChange={(e) => updateField('phone', e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => updateField('phone', e.target.value)}
           error={errors.phone}
         />
 
@@ -64,7 +64,7 @@ export function ContactForm({ className }: { className?: string }) {
           type="text"
           placeholder="Nom de votre entreprise"
           value={formData.company}
-          onChange={(e) => updateField('company', e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => updateField('company', e.target.value)}
           error={errors.company}
         />
 
@@ -74,7 +74,7 @@ export function ContactForm({ className }: { className?: string }) {
           type="select"
           placeholder="Sélectionnez un type"
           value={formData.propertyType}
-          onChange={(e) => updateField('propertyType', e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => updateField('propertyType', e.target.value)}
           options={PROPERTY_TYPES}
           error={errors.propertyType}
         />
@@ -86,7 +86,7 @@ export function ContactForm({ className }: { className?: string }) {
           required
           placeholder="Décrivez votre projet..."
           value={formData.message}
-          onChange={(e) => updateField('message', e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => updateField('message', e.target.value)}
           error={errors.message}
         />
       </div>
@@ -97,7 +97,7 @@ export function ContactForm({ className }: { className?: string }) {
           id="consent"
           name="consent"
           checked={formData.consent}
-          onChange={(e) => updateField('consent', e.target.checked)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateField('consent', e.target.checked)}
           className="mt-1 h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
         />
         <label htmlFor="consent" className="ml-2 text-sm text-gray-700">
