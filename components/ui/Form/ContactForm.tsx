@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { FormField } from './FormField';
 import { FormError } from './FormError';
 import { Button } from '../Button';
@@ -102,9 +103,9 @@ export function ContactForm({ className }: { className?: string }) {
         />
         <label htmlFor="consent" className="ml-2 text-sm text-gray-700">
           J'accepte la{' '}
-          <a href="/privacy" className="text-primary underline">
+          <Link href="/privacy" className="text-primary underline hover:text-primary/80">
             politique de confidentialité
-          </a>
+          </Link>
           <span className="text-red-500 ml-1">*</span>
         </label>
       </div>
