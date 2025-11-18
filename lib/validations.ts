@@ -52,6 +52,13 @@ export function validateConsent(value: boolean): string | undefined {
   return undefined;
 }
 
+export function validateTurnstileToken(value: string | undefined): string | undefined {
+  if (!value || value.trim().length === 0) {
+    return 'Veuillez compléter la vérification CAPTCHA';
+  }
+  return undefined;
+}
+
 // Validate a single field by name
 export function validateField(
   name: keyof ContactFormData,
@@ -70,6 +77,8 @@ export function validateField(
       return validateMessage(value as string);
     case 'consent':
       return validateConsent(value as boolean);
+    case 'turnstileToken':
+      return validateTurnstileToken(value as string | undefined);
     case 'company':
     case 'vatNumber':
     case 'propertyType':
@@ -111,6 +120,10 @@ export function validateContactForm(data: ContactFormData): ContactFormErrors {
 
   if (!data.consent) {
     errors.consent = FORM_MESSAGES.consentRequired;
+  }
+
+  if (!data.turnstileToken || data.turnstileToken.trim().length === 0) {
+    errors.turnstileToken = 'Veuillez compléter la vérification CAPTCHA';
   }
 
   return errors;

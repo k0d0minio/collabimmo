@@ -4,9 +4,75 @@ import type { ContactFormRequest, ApiResponse, ContactFormResponse } from '@/typ
 import { Resend } from 'resend';
 import { EmailTemplate } from '@/components/email';
 
+async function validateTurnstileToken(token: string): Promise<boolean> {
+  const secretKey = process.env.TURNSTILE_SECRET_KEY;
+  
+  if (!secretKey) {
+    console.error('TURNSTILE_SECRET_KEY is not set');
+    return false;
+  }
+
+  if (!token) {
+    return false;
+  }
+
+  try {
+    const response = await fetch(
+      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          secret: secretKey,
+          response: token,
+        }),
+      }
+    );
+
+    const result = await response.json();
+    return result.success === true;
+  } catch (error) {
+    console.error('Turnstile validation error:', error);
+    return false;
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body: ContactFormRequest = await request.json();
+
+    // Validate Turnstile token
+    if (!body.turnstileToken) {
+      return NextResponse.json<ApiResponse<ContactFormResponse>>(
+        {
+          success: false,
+          error: 'CAPTCHA validation failed',
+          data: {
+            success: false,
+            message: 'Veuillez compléter la vérification CAPTCHA',
+          },
+        },
+        { status: 400 }
+      );
+    }
+
+    const isTokenValid = await validateTurnstileToken(body.turnstileToken);
+    
+    if (!isTokenValid) {
+      return NextResponse.json<ApiResponse<ContactFormResponse>>(
+        {
+          success: false,
+          error: 'CAPTCHA validation failed',
+          data: {
+            success: false,
+            message: 'La vérification CAPTCHA a échoué. Veuillez réessayer.',
+          },
+        },
+        { status: 400 }
+      );
+    }
 
     // Validate form data
     const formData = {

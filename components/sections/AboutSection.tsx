@@ -11,15 +11,16 @@ export function AboutSection() {
   const duration = getAnimationDuration(reduceMotion, mobile);
 
   return (
-    <Section id={sectionIds.about}>
-      <motion.div
-        className="max-w-4xl mx-auto text-center"
-        variants={staggerContainer}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: '-100px' }}
-        custom={{ staggerDelay: 0.1 }}
-      >
+    <Section id={sectionIds.about} className="bg-gray-50">
+      <div className="max-w-4xl mx-auto bg-primary/5 rounded-lg p-8 md:p-12 shadow-sm">
+        <motion.div
+          className="text-center"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-100px' }}
+          custom={{ staggerDelay: 0.1 }}
+        >
         <motion.h2
           className="text-3xl md:text-4xl font-bold mb-6"
           variants={fadeInUp}
@@ -90,6 +91,7 @@ export function AboutSection() {
           </p>
         </motion.div>
       </motion.div>
+      </div>
     </Section>
   );
 }

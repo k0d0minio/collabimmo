@@ -20,5 +20,6 @@ export interface ContactFormRequest {
   vatNumber?: string;
   message: string;
   propertyType?: string;
+  turnstileToken?: string;
 }
 

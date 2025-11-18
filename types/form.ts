@@ -8,6 +8,7 @@ export interface ContactFormData {
   message: string;
   propertyType?: string;
   consent: boolean;
+  turnstileToken?: string;
 }
 
 export interface ContactFormErrors {
@@ -20,6 +21,7 @@ export interface ContactFormErrors {
   message?: string;
   propertyType?: string;
   consent?: string;
+  turnstileToken?: string;
   general?: string;
 }
 

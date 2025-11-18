@@ -4,6 +4,7 @@ import Link from "next/link";
 import { FormField } from "./FormField";
 import { FormError } from "./FormError";
 import { Button } from "../Button";
+import { Turnstile } from "../Turnstile";
 import { useContactForm } from "@/hooks/useContactForm";
 import { PROPERTY_TYPES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -15,7 +16,9 @@ export function ContactForm({ className }: { className?: string }) {
     isSubmitting,
     submitStatus,
     submitMessage,
+    turnstileResetKey,
     updateField,
+    updateTurnstileToken,
     handleBlur,
     submit
   } = useContactForm();
@@ -181,6 +184,23 @@ export function ContactForm({ className }: { className?: string }) {
         <p className="text-sm text-red-500">{errors.consent}</p>
       )}
 
+      <div>
+        <Turnstile
+          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
+          resetKey={turnstileResetKey}
+          onSuccess={updateTurnstileToken}
+          onError={() => {
+            // Handle error if needed
+          }}
+          onExpire={() => {
+            updateTurnstileToken("");
+          }}
+        />
+        {errors.turnstileToken && (
+          <p className="text-sm text-red-500 mt-2">{errors.turnstileToken}</p>
+        )}
+      </div>
+
       {submitStatus === "error" && <FormError message={submitMessage} />}
       {submitStatus === "success" && (
         <div className="p-4 rounded-md bg-green-50 border border-green-200">
@@ -192,7 +212,7 @@ export function ContactForm({ className }: { className?: string }) {
         type="submit"
         variant="primary"
         size="lg"
-        disabled={isSubmitting}
+        disabled={isSubmitting || !formData.turnstileToken}
         className="w-full"
       >
         {isSubmitting ? "Envoi en cours..." : "Envoyer"}

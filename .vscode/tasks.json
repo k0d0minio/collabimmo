@@ -21,6 +21,13 @@
     },
 
     {
+      "label": "Env Pull",
+      "type": "shell",
+      "command": "npm run env:pull",
+      "problemMatcher": []
+    },
+
+    {
       "label": "Build",
       "type": "shell",
       "command": "npm run build",

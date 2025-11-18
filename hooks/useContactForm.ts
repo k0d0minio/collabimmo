@@ -16,6 +16,7 @@ const initialFormData: ContactFormData = {
   message: '',
   propertyType: '',
   consent: false,
+  turnstileToken: undefined,
 };
 
 export function useContactForm() {
@@ -24,6 +25,7 @@ export function useContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [submitMessage, setSubmitMessage] = useState('');
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
 
   const updateField = useCallback((name: keyof ContactFormData, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -67,6 +69,18 @@ export function useContactForm() {
     }
   }, [formData]);
 
+  const updateTurnstileToken = useCallback((token: string) => {
+    setFormData((prev) => ({ ...prev, turnstileToken: token }));
+    // Clear CAPTCHA error when token is set
+    if (errors.turnstileToken) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.turnstileToken;
+        return newErrors;
+      });
+    }
+  }, [errors.turnstileToken]);
+
   const reset = useCallback(() => {
     setFormData(initialFormData);
     setErrors({});
@@ -84,7 +98,7 @@ export function useContactForm() {
     setSubmitMessage('');
 
     try {
-      const { firstname, name, email, phone, company, vatNumber, message, propertyType } = formData;
+      const { firstname, name, email, phone, company, vatNumber, message, propertyType, turnstileToken } = formData;
       const response = await submitContactForm({
         firstname,
         name,
@@ -94,6 +108,7 @@ export function useContactForm() {
         vatNumber: vatNumber || undefined,
         message,
         propertyType: propertyType || undefined,
+        turnstileToken: turnstileToken || undefined,
       });
 
       if (response.success) {
@@ -102,6 +117,8 @@ export function useContactForm() {
         // Reset form data but keep success status/message visible
         setFormData(initialFormData);
         setErrors({});
+        // Reset Turnstile widget after successful submission
+        setTurnstileResetKey((prev) => prev + 1);
       } else {
         setSubmitStatus('error');
         setSubmitMessage(response.error || FORM_MESSAGES.error);
@@ -120,7 +137,9 @@ export function useContactForm() {
     isSubmitting,
     submitStatus,
     submitMessage,
+    turnstileResetKey,
     updateField,
+    updateTurnstileToken,
     validate,
     handleBlur,
     submit,
