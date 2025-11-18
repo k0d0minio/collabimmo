@@ -52,7 +52,9 @@ export function useContactForm() {
 
   const handleBlur = useCallback((name: keyof ContactFormData) => {
     const value = formData[name];
-    const error = validateField(name, value);
+    // Provide default values for undefined optional fields
+    const valueToValidate = value ?? (name === 'consent' ? false : '');
+    const error = validateField(name, valueToValidate);
     if (error) {
       setErrors((prev) => ({ ...prev, [name]: error }));
     } else {
