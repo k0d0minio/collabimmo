@@ -4,6 +4,10 @@ import type { ContactFormData, ContactFormErrors } from '@/types';
 export function validateContactForm(data: ContactFormData): ContactFormErrors {
   const errors: ContactFormErrors = {};
 
+  if (!data.firstname || data.firstname.trim().length === 0) {
+    errors.firstname = FORM_MESSAGES.required;
+  }
+
   if (!data.name || data.name.trim().length === 0) {
     errors.name = FORM_MESSAGES.required;
   }

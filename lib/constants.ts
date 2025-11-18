@@ -5,11 +5,12 @@ export const COMPANY_INFO = siteConfig.company;
 export const CONTACT_EMAIL = siteConfig.contact.email;
 
 export const PROPERTY_TYPES = [
-  { value: 'bureaux', label: 'Bureaux' },
-  { value: 'commerces', label: 'Commerces' },
-  { value: 'entrepots', label: 'Entrepôts' },
-  { value: 'immeubles-rapport', label: 'Immeubles de rapport' },
-  { value: 'autre', label: 'Autre' },
+  { value: 'vendre-mon-bien', label: 'Vendre mon bien' },
+  { value: 'vendre-mes-parts-dentreprise', label: 'Vendre mes parts d\'entreprise' },
+  { value: 'relocalisation-ou-delocalisation-dentreprise', label: 'Relocalisation ou Délocalisation d\'entreprise' },
+  { value: 'investir', label: 'Investir' },
+  { value: 'demander-un-conseil', label: 'Demander un conseil' },
+  { value: 'autre', label: 'Autre ...' },
 ] as const;
 
 export const FORM_MESSAGES = {

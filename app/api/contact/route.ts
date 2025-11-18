@@ -9,10 +9,12 @@ export async function POST(request: NextRequest) {
 
     // Validate form data
     const formData = {
+      firstname: body.firstname || '',
       name: body.name || '',
       email: body.email || '',
       phone: body.phone || '',
       company: body.company || '',
+      vatNumber: body.vatNumber || '',
       message: body.message || '',
       propertyType: body.propertyType || '',
       consent: true, // Assuming consent is handled client-side

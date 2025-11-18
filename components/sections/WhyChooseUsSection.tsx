@@ -59,29 +59,90 @@ export function WhyChooseUsSection() {
         </motion.div>
 
         <motion.div
-          className="grid md:grid-cols-3 gap-8 mb-16"
+          className="grid grid-cols-1 md:grid-cols-5 gap-4 md:gap-8 mb-16 items-center"
           variants={staggerContainer}
           custom={{ staggerDelay: 0.1 }}
         >
-          {steps.map((step, index) => (
-            <motion.div
-              key={index}
-              className="relative"
-              variants={fadeInUp}
-              custom={{ duration: duration / 1000 }}
-            >
-              <div className="flex flex-col items-center text-center">
+          {steps.flatMap((step, index) => {
+            const items = [
+              <motion.div
+                key={`step-${index}`}
+                className="flex flex-col items-center text-center"
+                variants={fadeInUp}
+                custom={{ duration: duration / 1000 }}
+              >
                 <div className="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center text-2xl font-bold mb-4">
                   {step.number}
                 </div>
                 <h3 className="text-xl font-semibold mb-2">{step.title}</h3>
                 <p className="text-gray-600">{step.description}</p>
-              </div>
-              {index < steps.length - 1 && (
-                <div className="hidden md:block absolute top-8 left-full w-full h-0.5 bg-gray-200 transform translate-x-4" />
-              )}
-            </motion.div>
-          ))}
+              </motion.div>
+            ];
+            
+            if (index < steps.length - 1) {
+              items.push(
+                <motion.div
+                  key={`arrow-${index}`}
+                  className="flex items-center justify-center"
+                  variants={fadeInUp}
+                  custom={{ duration: duration / 1000 }}
+                >
+                  {/* Horizontal arrow for desktop */}
+                  <svg
+                    className="hidden md:block w-full max-w-[60px] h-4 text-gray-300"
+                    viewBox="0 0 60 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <line
+                      x1="0"
+                      y1="8"
+                      x2="50"
+                      y2="8"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M50 8 L60 8 L55 4 M60 8 L55 12"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  {/* Vertical arrow for mobile */}
+                  <svg
+                    className="md:hidden w-4 h-12 text-gray-300"
+                    viewBox="0 0 16 60"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <line
+                      x1="8"
+                      y1="0"
+                      x2="8"
+                      y2="50"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M8 50 L8 60 L4 55 M8 60 L12 55"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </motion.div>
+              );
+            }
+            
+            return items;
+          })}
         </motion.div>
 
         <motion.div

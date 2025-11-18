@@ -11,9 +11,14 @@ export interface LogoProps {
 export function Logo({ className, width = 150, height = 50 }: LogoProps) {
   return (
     <Link href="/" className={cn('inline-block', className)}>
-      <div className="flex items-center">
-        <span className="text-2xl font-bold text-primary">Collabimmo</span>
-      </div>
+      <Image
+        src="/logo.png"
+        alt="Collabimmo"
+        width={width}
+        height={height}
+        priority
+        className="h-auto"
+      />
     </Link>
   );
 }

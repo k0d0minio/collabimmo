@@ -12,10 +12,12 @@ export interface ContactFormResponse {
 }
 
 export interface ContactFormRequest {
+  firstname: string;
   name: string;
   email: string;
   phone?: string;
   company?: string;
+  vatNumber?: string;
   message: string;
   propertyType?: string;
 }

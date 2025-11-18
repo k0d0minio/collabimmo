@@ -2,7 +2,9 @@
 
 import { Section } from '@/components/ui/Section';
 import { CTA } from '@/components/ui/CTA';
+import { BackgroundGallery } from '@/components/ui/BackgroundGallery';
 import { sectionIds } from '@/config/navigation';
+import { heroMediaItems } from '@/config/heroMedia';
 import { motion } from 'framer-motion';
 import { fadeInUp, staggerContainer, useShouldReduceMotion, isMobileDevice, getAnimationDuration } from '@/lib/animations';
 
@@ -12,7 +14,8 @@ export function HeroSection() {
   const duration = getAnimationDuration(reduceMotion, mobile);
 
   return (
-    <Section id={sectionIds.hero} className="relative min-h-[600px] flex items-center bg-gray-900 text-white">
+    <Section id={sectionIds.hero} className="relative min-h-[600px] flex items-center text-white">
+      <BackgroundGallery items={heroMediaItems} interval={8000} />
       <div className="absolute inset-0 bg-black/50 z-0" />
       <motion.div
         className="relative z-10 w-full"

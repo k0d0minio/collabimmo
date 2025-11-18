@@ -7,10 +7,12 @@ import type { ContactFormData, ContactFormErrors } from '@/types';
 import { FORM_MESSAGES } from '@/lib/constants';
 
 const initialFormData: ContactFormData = {
+  firstname: '',
   name: '',
   email: '',
   phone: '',
   company: '',
+  vatNumber: '',
   message: '',
   propertyType: '',
   consent: false,
@@ -57,12 +59,14 @@ export function useContactForm() {
     setSubmitMessage('');
 
     try {
-      const { name, email, phone, company, message, propertyType } = formData;
+      const { firstname, name, email, phone, company, vatNumber, message, propertyType } = formData;
       const response = await submitContactForm({
+        firstname,
         name,
         email,
         phone: phone || undefined,
         company: company || undefined,
+        vatNumber: vatNumber || undefined,
         message,
         propertyType: propertyType || undefined,
       });
@@ -75,7 +79,7 @@ export function useContactForm() {
         setSubmitStatus('error');
         setSubmitMessage(response.error || FORM_MESSAGES.error);
       }
-    } catch (error) {
+    } catch {
       setSubmitStatus('error');
       setSubmitMessage(FORM_MESSAGES.error);
     } finally {

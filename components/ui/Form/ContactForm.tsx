@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { FormField } from './FormField';
-import { FormError } from './FormError';
-import { Button } from '../Button';
-import { useContactForm } from '@/hooks/useContactForm';
-import { PROPERTY_TYPES } from '@/lib/constants';
-import { cn } from '@/lib/utils';
+import Link from "next/link";
+import { FormField } from "./FormField";
+import { FormError } from "./FormError";
+import { Button } from "../Button";
+import { useContactForm } from "@/hooks/useContactForm";
+import { PROPERTY_TYPES } from "@/lib/constants";
+import { cn } from "@/lib/utils";
 
 export function ContactForm({ className }: { className?: string }) {
   const {
@@ -16,7 +16,7 @@ export function ContactForm({ className }: { className?: string }) {
     submitStatus,
     submitMessage,
     updateField,
-    submit,
+    submit
   } = useContactForm();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -25,8 +25,23 @@ export function ContactForm({ className }: { className?: string }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className={cn('space-y-6', className)}>
+    <form onSubmit={handleSubmit} className={cn("space-y-6", className)}>
       <div className="space-y-4">
+        <FormField
+          name="firstname"
+          label="Prénom"
+          type="text"
+          required
+          placeholder="Votre prénom"
+          value={formData.firstname}
+          onChange={(
+            e: React.ChangeEvent<
+              HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+            >
+          ) => updateField("firstname", e.target.value)}
+          error={errors.firstname}
+        />
+
         <FormField
           name="name"
           label="Nom"
@@ -34,7 +49,11 @@ export function ContactForm({ className }: { className?: string }) {
           required
           placeholder="Votre nom"
           value={formData.name}
-          onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => updateField('name', e.target.value)}
+          onChange={(
+            e: React.ChangeEvent<
+              HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+            >
+          ) => updateField("name", e.target.value)}
           error={errors.name}
         />
 
@@ -45,7 +64,11 @@ export function ContactForm({ className }: { className?: string }) {
           required
           placeholder="votre@email.com"
           value={formData.email}
-          onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => updateField('email', e.target.value)}
+          onChange={(
+            e: React.ChangeEvent<
+              HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+            >
+          ) => updateField("email", e.target.value)}
           error={errors.email}
         />
 
@@ -55,7 +78,11 @@ export function ContactForm({ className }: { className?: string }) {
           type="tel"
           placeholder="+32 XXX XX XX XX"
           value={formData.phone}
-          onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => updateField('phone', e.target.value)}
+          onChange={(
+            e: React.ChangeEvent<
+              HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+            >
+          ) => updateField("phone", e.target.value)}
           error={errors.phone}
         />
 
@@ -65,17 +92,39 @@ export function ContactForm({ className }: { className?: string }) {
           type="text"
           placeholder="Nom de votre entreprise"
           value={formData.company}
-          onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => updateField('company', e.target.value)}
+          onChange={(
+            e: React.ChangeEvent<
+              HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+            >
+          ) => updateField("company", e.target.value)}
           error={errors.company}
         />
 
         <FormField
+          name="vatNumber"
+          label="TVA"
+          type="text"
+          placeholder="Votre numéro de TVA"
+          value={formData.vatNumber}
+          onChange={(
+            e: React.ChangeEvent<
+              HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+            >
+          ) => updateField("vatNumber", e.target.value)}
+          error={errors.vatNumber}
+        />
+
+        <FormField
           name="propertyType"
-          label="Type de bien"
+          label="Vos besoins"
           type="select"
           placeholder="Sélectionnez un type"
           value={formData.propertyType}
-          onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => updateField('propertyType', e.target.value)}
+          onChange={(
+            e: React.ChangeEvent<
+              HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+            >
+          ) => updateField("propertyType", e.target.value)}
           options={PROPERTY_TYPES}
           error={errors.propertyType}
         />
@@ -87,7 +136,11 @@ export function ContactForm({ className }: { className?: string }) {
           required
           placeholder="Décrivez votre projet..."
           value={formData.message}
-          onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => updateField('message', e.target.value)}
+          onChange={(
+            e: React.ChangeEvent<
+              HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+            >
+          ) => updateField("message", e.target.value)}
           error={errors.message}
         />
       </div>
@@ -98,12 +151,17 @@ export function ContactForm({ className }: { className?: string }) {
           id="consent"
           name="consent"
           checked={formData.consent}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateField('consent', e.target.checked)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            updateField("consent", e.target.checked)
+          }
           className="mt-1 h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
         />
         <label htmlFor="consent" className="ml-2 text-sm text-gray-700">
-          J'accepte la{' '}
-          <Link href="/privacy" className="text-primary underline hover:text-primary/80">
+          J&apos;accepte la{" "}
+          <Link
+            href="/privacy"
+            className="text-primary underline hover:text-primary/80"
+          >
             politique de confidentialité
           </Link>
           <span className="text-red-500 ml-1">*</span>
@@ -113,8 +171,8 @@ export function ContactForm({ className }: { className?: string }) {
         <p className="text-sm text-red-500">{errors.consent}</p>
       )}
 
-      {submitStatus === 'error' && <FormError message={submitMessage} />}
-      {submitStatus === 'success' && (
+      {submitStatus === "error" && <FormError message={submitMessage} />}
+      {submitStatus === "success" && (
         <div className="p-4 rounded-md bg-green-50 border border-green-200">
           <p className="text-sm text-green-800">{submitMessage}</p>
         </div>
@@ -127,9 +185,8 @@ export function ContactForm({ className }: { className?: string }) {
         disabled={isSubmitting}
         className="w-full"
       >
-        {isSubmitting ? 'Envoi en cours...' : 'Envoyer'}
+        {isSubmitting ? "Envoi en cours..." : "Envoyer"}
       </Button>
     </form>
   );
 }
-
