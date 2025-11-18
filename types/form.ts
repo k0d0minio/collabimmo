@@ -32,6 +32,7 @@ export interface FormFieldProps {
   error?: string;
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   options?: readonly { value: string; label: string }[];
 }
 

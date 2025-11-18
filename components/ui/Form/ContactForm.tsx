@@ -16,6 +16,7 @@ export function ContactForm({ className }: { className?: string }) {
     submitStatus,
     submitMessage,
     updateField,
+    handleBlur,
     submit
   } = useContactForm();
 
@@ -39,6 +40,7 @@ export function ContactForm({ className }: { className?: string }) {
               HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
             >
           ) => updateField("firstname", e.target.value)}
+          onBlur={() => handleBlur("firstname")}
           error={errors.firstname}
         />
 
@@ -54,6 +56,7 @@ export function ContactForm({ className }: { className?: string }) {
               HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
             >
           ) => updateField("name", e.target.value)}
+          onBlur={() => handleBlur("name")}
           error={errors.name}
         />
 
@@ -69,6 +72,7 @@ export function ContactForm({ className }: { className?: string }) {
               HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
             >
           ) => updateField("email", e.target.value)}
+          onBlur={() => handleBlur("email")}
           error={errors.email}
         />
 
@@ -83,6 +87,7 @@ export function ContactForm({ className }: { className?: string }) {
               HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
             >
           ) => updateField("phone", e.target.value)}
+          onBlur={() => handleBlur("phone")}
           error={errors.phone}
         />
 
@@ -97,6 +102,7 @@ export function ContactForm({ className }: { className?: string }) {
               HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
             >
           ) => updateField("company", e.target.value)}
+          onBlur={() => handleBlur("company")}
           error={errors.company}
         />
 
@@ -111,6 +117,7 @@ export function ContactForm({ className }: { className?: string }) {
               HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
             >
           ) => updateField("vatNumber", e.target.value)}
+          onBlur={() => handleBlur("vatNumber")}
           error={errors.vatNumber}
         />
 
@@ -125,6 +132,7 @@ export function ContactForm({ className }: { className?: string }) {
               HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
             >
           ) => updateField("propertyType", e.target.value)}
+          onBlur={() => handleBlur("propertyType")}
           options={PROPERTY_TYPES}
           error={errors.propertyType}
         />
@@ -141,6 +149,7 @@ export function ContactForm({ className }: { className?: string }) {
               HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
             >
           ) => updateField("message", e.target.value)}
+          onBlur={() => handleBlur("message")}
           error={errors.message}
         />
       </div>
@@ -154,6 +163,7 @@ export function ContactForm({ className }: { className?: string }) {
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             updateField("consent", e.target.checked)
           }
+          onBlur={() => handleBlur("consent")}
           className="mt-1 h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
         />
         <label htmlFor="consent" className="ml-2 text-sm text-gray-700">

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateContactForm } from '@/lib/validations';
 import type { ContactFormRequest, ApiResponse, ContactFormResponse } from '@/types';
-import { CONTACT_EMAIL } from '@/lib/constants';
+import { Resend } from 'resend';
+import { EmailTemplate } from '@/components/email';
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,26 +37,47 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // TODO: Implement email sending
-    // TODO: Implement database/CRM storage
-    // TODO: Add spam protection (reCAPTCHA)
-    
-    // Placeholder response
-    const response: ContactFormResponse = {
-      success: true,
-      message: 'Votre message a été envoyé avec succès. Nous vous recontacterons rapidement.',
-    };
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
-    // In production, you would:
-    // 1. Send email to CONTACT_EMAIL
-    // 2. Store submission in database/CRM
-    // 3. Send auto-reply to submitter (optional)
-    // 4. Log the submission
+    const { data, error } = await resend.emails.send({
+      from: 'Collabimmo <noreply@mail.jamienisbet.com>',
+      to: [process.env.EMAIL_TO!],
+      replyTo: formData.email,
+      subject: `Nouveau message de contact - ${formData.firstname} ${formData.name}`,
+      react: EmailTemplate({
+        firstname: formData.firstname,
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone || undefined,
+        company: formData.company || undefined,
+        vatNumber: formData.vatNumber || undefined,
+        propertyType: formData.propertyType || undefined,
+        message: formData.message,
+      }),
+    });
+
+    if (error) {
+      console.error('Resend error:', error);
+      return NextResponse.json<ApiResponse<ContactFormResponse>>(
+        {
+          success: false,
+          error: 'Failed to send email',
+          data: {
+            success: false,
+            message: 'Une erreur est survenue lors de l\'envoi du formulaire',
+          },
+        },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json<ApiResponse<ContactFormResponse>>(
       {
         success: true,
-        data: response,
+        data: {
+          success: true,
+          message: 'Votre message a été envoyé avec succès. Nous vous recontacterons rapidement.',
+        },
       },
       { status: 200 }
     );

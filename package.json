@@ -7,14 +7,18 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "clean": "rm -rf .next out build node_modules"
+    "clean": "rm -rf .next out build node_modules",
+    "env:pull": "vercel env pull"
   },
   "dependencies": {
+    "@react-email/components": "^1.0.1",
+    "@react-email/render": "^2.0.0",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.24",
     "next": "16.0.3",
     "react": "19.2.0",
     "react-dom": "19.2.0",
+    "resend": "^6.4.2",
     "tailwind-merge": "^2.5.4"
   },
   "devDependencies": {

@@ -11,6 +11,7 @@ export function FormField({
   error,
   value,
   onChange,
+  onBlur,
   options,
   ...props
 }: FormFieldProps & (InputHTMLAttributes<HTMLInputElement> | TextareaHTMLAttributes<HTMLTextAreaElement> | SelectHTMLAttributes<HTMLSelectElement>)) {
@@ -32,6 +33,7 @@ export function FormField({
           placeholder={placeholder}
           value={value}
           onChange={onChange}
+          onBlur={onBlur}
           className={cn(
             'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary',
             error ? 'border-red-500' : 'border-gray-300',
@@ -47,6 +49,7 @@ export function FormField({
           required={required}
           value={value}
           onChange={onChange}
+          onBlur={onBlur}
           className={cn(
             'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary',
             error ? 'border-red-500' : 'border-gray-300'
@@ -69,6 +72,7 @@ export function FormField({
           placeholder={placeholder}
           value={value}
           onChange={onChange}
+          onBlur={onBlur}
           className={cn(
             'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary',
             error ? 'border-red-500' : 'border-gray-300'

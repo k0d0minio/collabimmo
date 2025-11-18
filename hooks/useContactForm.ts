@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { submitContactForm } from '@/lib/api';
-import { validateContactForm, hasFormErrors } from '@/lib/validations';
+import { validateContactForm, hasFormErrors, validateField } from '@/lib/validations';
 import type { ContactFormData, ContactFormErrors } from '@/types';
 import { FORM_MESSAGES } from '@/lib/constants';
 
@@ -27,6 +27,7 @@ export function useContactForm() {
 
   const updateField = useCallback((name: keyof ContactFormData, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
+    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -34,12 +35,34 @@ export function useContactForm() {
         return newErrors;
       });
     }
+    // For email field, validate on change for immediate feedback
+    if (name === 'email' && typeof value === 'string' && value.length > 0) {
+      const error = validateField(name, value);
+      if (error) {
+        setErrors((prev) => ({ ...prev, [name]: error }));
+      }
+    }
   }, [errors]);
 
   const validate = useCallback((): boolean => {
     const validationErrors = validateContactForm(formData);
     setErrors(validationErrors);
     return !hasFormErrors(validationErrors);
+  }, [formData]);
+
+  const handleBlur = useCallback((name: keyof ContactFormData) => {
+    const value = formData[name];
+    const error = validateField(name, value);
+    if (error) {
+      setErrors((prev) => ({ ...prev, [name]: error }));
+    } else {
+      // Clear error if field is valid
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
   }, [formData]);
 
   const reset = useCallback(() => {
@@ -74,7 +97,9 @@ export function useContactForm() {
       if (response.success) {
         setSubmitStatus('success');
         setSubmitMessage(FORM_MESSAGES.success);
-        reset();
+        // Reset form data but keep success status/message visible
+        setFormData(initialFormData);
+        setErrors({});
       } else {
         setSubmitStatus('error');
         setSubmitMessage(response.error || FORM_MESSAGES.error);
@@ -95,6 +120,7 @@ export function useContactForm() {
     submitMessage,
     updateField,
     validate,
+    handleBlur,
     submit,
     reset,
   };
