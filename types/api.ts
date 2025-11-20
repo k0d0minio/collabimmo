@@ -3,12 +3,14 @@ export interface ApiResponse<T = unknown> {
   data?: T;
   error?: string;
   message?: string;
+  validationErrors?: Record<string, string>;
 }
 
 export interface ContactFormResponse {
   success: boolean;
   message: string;
   id?: string;
+  validationErrors?: Record<string, string>;
 }
 
 export interface ContactFormRequest {

@@ -41,7 +41,9 @@ export function Header() {
             size="sm"
             className="md:hidden"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Toggle menu"
+            aria-label={isMobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-navigation"
           >
             <svg
               className="h-6 w-6"
@@ -71,6 +73,7 @@ export function Header() {
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
+              id="mobile-navigation"
               className="md:hidden py-4 border-t overflow-hidden"
               variants={reduceMotion ? undefined : fadeInDown}
               initial="hidden"
@@ -78,7 +81,7 @@ export function Header() {
               exit="exit"
               style={{ willChange: reduceMotion ? 'auto' : 'transform, opacity' }}
             >
-              <nav className="flex flex-col space-y-4">
+              <nav className="flex flex-col space-y-4" aria-label="Navigation principale">
                 {navigationConfig.items.map((item) => (
                   <a
                     key={item.href}

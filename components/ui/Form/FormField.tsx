@@ -54,12 +54,13 @@ export function FormField({
 
   // Convert empty string to undefined for Select (Radix shows placeholder when value is undefined)
   const selectValue = isSelect && (!value || value === '') ? undefined : value;
+  const errorId = `${fieldId}-error`;
 
   return (
     <div className="w-full">
       <Label htmlFor={fieldId} className="block mb-2">
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="text-red-500 ml-1" aria-label="requis">*</span>}
       </Label>
       {isTextarea ? (
         <Textarea
@@ -70,6 +71,8 @@ export function FormField({
           value={value}
           onChange={onChange}
           onBlur={onBlur}
+          aria-invalid={error ? 'true' : 'false'}
+          aria-describedby={error ? errorId : undefined}
           className={cn(
             'px-4',
             error && 'border-red-500 focus-visible:ring-red-500',
@@ -86,6 +89,8 @@ export function FormField({
           <SelectTrigger
             id={fieldId}
             name={name}
+            aria-invalid={error ? 'true' : 'false'}
+            aria-describedby={error ? errorId : undefined}
             className={cn(
               'px-4',
               error && 'border-red-500 focus:ring-red-500'
@@ -112,6 +117,8 @@ export function FormField({
           value={value}
           onChange={onChange}
           onBlur={onBlur}
+          aria-invalid={error ? 'true' : 'false'}
+          aria-describedby={error ? errorId : undefined}
           className={cn(
             'px-4',
             error && 'border-red-500 focus-visible:ring-red-500'
@@ -120,7 +127,9 @@ export function FormField({
         />
       )}
       {error && (
-        <p className="mt-1 text-sm text-red-500">{error}</p>
+        <p id={errorId} className="mt-1 text-sm text-red-500" role="alert">
+          {error}
+        </p>
       )}
     </div>
   );

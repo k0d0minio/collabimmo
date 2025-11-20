@@ -39,7 +39,8 @@ export function useContactForm() {
     }
     // For email field, validate on change for immediate feedback
     if (name === 'email' && typeof value === 'string' && value.length > 0) {
-      const error = validateField(name, value);
+      const skipTurnstileInDev = process.env.NODE_ENV === 'development';
+      const error = validateField(name, value, skipTurnstileInDev);
       if (error) {
         setErrors((prev) => ({ ...prev, [name]: error }));
       }
@@ -47,8 +48,11 @@ export function useContactForm() {
   }, [errors]);
 
   const validate = useCallback((): boolean => {
-    const validationErrors = validateContactForm(formData);
+    // Skip Turnstile validation in development
+    const skipTurnstileInDev = process.env.NODE_ENV === 'development';
+    const validationErrors = validateContactForm(formData, skipTurnstileInDev);
     setErrors(validationErrors);
+    
     return !hasFormErrors(validationErrors);
   }, [formData]);
 
@@ -56,7 +60,9 @@ export function useContactForm() {
     const value = formData[name];
     // Provide default values for undefined optional fields
     const valueToValidate = value ?? (name === 'consent' ? false : '');
-    const error = validateField(name, valueToValidate);
+    // Skip Turnstile validation in development
+    const skipTurnstileInDev = process.env.NODE_ENV === 'development';
+    const error = validateField(name, valueToValidate, skipTurnstileInDev);
     if (error) {
       setErrors((prev) => ({ ...prev, [name]: error }));
     } else {
@@ -98,7 +104,8 @@ export function useContactForm() {
     setSubmitMessage('');
 
     try {
-      const { firstname, name, email, phone, company, vatNumber, message, propertyType, turnstileToken } = formData;
+      const { firstname, name, email, phone, company, vatNumber, message, propertyType, turnstileToken, consent } = formData;
+      
       const response = await submitContactForm({
         firstname,
         name,
@@ -109,6 +116,7 @@ export function useContactForm() {
         message,
         propertyType: propertyType || undefined,
         turnstileToken: turnstileToken || undefined,
+        consent: consent, // Include consent value
       });
 
       if (response.success) {
@@ -121,11 +129,22 @@ export function useContactForm() {
         setTurnstileResetKey((prev) => prev + 1);
       } else {
         setSubmitStatus('error');
-        setSubmitMessage(response.error || FORM_MESSAGES.error);
+        
+        // If there are validation errors from the server, merge them with local errors
+        if (response.validationErrors) {
+          setErrors((prev) => ({ ...prev, ...response.validationErrors }));
+        }
+        
+        // Use detailed error message from server, or fallback to generic message
+        const errorMessage = response.error || response.message || FORM_MESSAGES.error;
+        setSubmitMessage(errorMessage);
       }
-    } catch {
+    } catch (error) {
       setSubmitStatus('error');
-      setSubmitMessage(FORM_MESSAGES.error);
+      const errorMessage = error instanceof Error 
+        ? `Erreur: ${error.message}` 
+        : FORM_MESSAGES.error;
+      setSubmitMessage(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

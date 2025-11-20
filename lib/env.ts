@@ -54,31 +54,13 @@ function getPublicEnv(key: string, defaultValue?: string): () => string {
       // If we have a default, use it only if the value is truly empty
       const result = trimmedValue || defaultValue;
       
-      // Log warning in development if using default
-      if (typeof window !== 'undefined' && !trimmedValue && defaultValue === '') {
-        // Check if the variable actually exists but our access method failed
-        const directCheck = typeof process !== 'undefined' && process.env 
-          ? process.env[key] 
-          : undefined;
-        
-        console.warn(
-          `[env] Missing public environment variable: ${key}\n` +
-          `Direct check: ${directCheck ? 'exists' : 'missing'}\n` +
-          `This variable must be set at BUILD TIME for Next.js.\n` +
-          `If you just set it, you need to rebuild your application.`
-        );
-      }
+      // Note: Missing public env vars should be caught at build time
       
       return result;
     }
     
     if (!trimmedValue) {
-      if (typeof window !== 'undefined') {
-        console.warn(
-          `[env] Missing public environment variable: ${key}. Using empty string as fallback.\n` +
-          `Note: NEXT_PUBLIC_ variables must be available at BUILD TIME in Next.js.`
-        );
-      }
+      // Note: Missing public env vars should be caught at build time
       return '';
     }
     
@@ -183,6 +165,43 @@ export const publicEnv = {
     },
   },
 } as const;
+
+/**
+ * Validate that all required environment variables are set
+ * Call this at application startup to fail fast if configuration is missing
+ * @throws Error if any required environment variables are missing
+ */
+export function validateEnv(): void {
+  const missing: string[] = [];
+
+  // Check server-side required env vars
+  if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY.trim() === '') {
+    missing.push('RESEND_API_KEY');
+  }
+  if (!process.env.RESEND_FROM_EMAIL || process.env.RESEND_FROM_EMAIL.trim() === '') {
+    missing.push('RESEND_FROM_EMAIL');
+  }
+  if (!process.env.EMAIL_TO || process.env.EMAIL_TO.trim() === '') {
+    missing.push('EMAIL_TO');
+  }
+  if (!process.env.TURNSTILE_SECRET_KEY || process.env.TURNSTILE_SECRET_KEY.trim() === '') {
+    missing.push('TURNSTILE_SECRET_KEY');
+  }
+
+  // Check client-side required env vars (only in production)
+  if (process.env.NODE_ENV === 'production') {
+    if (!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY.trim() === '') {
+      missing.push('NEXT_PUBLIC_TURNSTILE_SITE_KEY');
+    }
+  }
+
+  if (missing.length > 0) {
+    throw new Error(
+      `Missing required environment variables: ${missing.join(', ')}\n` +
+      `Please check your environment configuration. See .env.example for required variables.`
+    );
+  }
+}
 
 /**
  * Debug helper to check environment variable status

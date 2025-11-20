@@ -17,7 +17,7 @@ export function Navigation({ className }: { className?: string }) {
   };
 
   return (
-    <nav className={cn('hidden md:flex items-center space-x-8', className)}>
+    <nav className={cn('hidden md:flex items-center space-x-8', className)} aria-label="Navigation principale">
       {navigationConfig.items.map((item) => (
         <Link
           key={item.href}

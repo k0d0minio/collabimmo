@@ -35,18 +35,6 @@ export function ContactForm({ className }: { className?: string }) {
     }
   }
 
-  // Debug logging (only in browser console)
-  if (typeof window !== 'undefined') {
-    console.log('[ContactForm] Turnstile siteKey:', {
-      exists: !!turnstileSiteKey,
-      length: turnstileSiteKey?.length || 0,
-      preview: turnstileSiteKey ? `${turnstileSiteKey.substring(0, 10)}...` : 'empty',
-      fromGetter: publicEnv.turnstile.siteKey || 'empty',
-      rawEnv: typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY : 'N/A (client-side)',
-      finalValue: turnstileSiteKey || 'empty'
-    });
-  }
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     submit();
@@ -226,9 +214,14 @@ export function ContactForm({ className }: { className?: string }) {
         )}
       </div>
 
-      {submitStatus === "error" && <FormError message={submitMessage} />}
+      {submitStatus === "error" && (
+        <FormError 
+          message={submitMessage} 
+          detailed={true}
+        />
+      )}
       {submitStatus === "success" && (
-        <div className="p-4 rounded-md bg-green-50 border border-green-200">
+        <div className="p-4 rounded-md bg-green-50 border border-green-200" role="alert" aria-live="polite">
           <p className="text-sm text-green-800">{submitMessage}</p>
         </div>
       )}
@@ -237,7 +230,10 @@ export function ContactForm({ className }: { className?: string }) {
         type="submit"
         variant="primary"
         size="lg"
-        disabled={isSubmitting || !formData.turnstileToken}
+        disabled={
+          isSubmitting || 
+          (process.env.NODE_ENV !== 'development' && !formData.turnstileToken)
+        }
         className="w-full"
       >
         {isSubmitting ? "Envoi en cours..." : "Envoyer"}

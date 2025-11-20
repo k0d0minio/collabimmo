@@ -43,30 +43,8 @@ export function Turnstile({
     onExpire?.();
   };
 
-  useEffect(() => {
-    if (isMounted) {
-      if (!siteKey) {
-        console.error(
-          '[Turnstile] Missing siteKey. Please set NEXT_PUBLIC_TURNSTILE_SITE_KEY environment variable.',
-          {
-            siteKeyValue: siteKey,
-            siteKeyType: typeof siteKey,
-            siteKeyLength: siteKey?.length || 0,
-            nodeEnv: typeof process !== 'undefined' ? process.env.NODE_ENV : 'N/A',
-            // Note: process.env.NEXT_PUBLIC_* vars are only available at build time in Next.js
-            rawEnvCheck: typeof process !== 'undefined' ? 
-              (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ? 'exists' : 'missing') : 
-              'N/A (client-side)'
-          }
-        );
-      } else {
-        console.log('[Turnstile] SiteKey loaded successfully:', {
-          length: siteKey.length,
-          preview: `${siteKey.substring(0, 10)}...`
-        });
-      }
-    }
-  }, [isMounted, siteKey]);
+  // Note: siteKey validation happens at build time
+  // In production, missing siteKey will show error UI instead of console logs
 
   if (!isMounted) {
     return (

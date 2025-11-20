@@ -69,7 +69,12 @@ export function validateConsent(value: boolean): string | undefined {
   return undefined;
 }
 
-export function validateTurnstileToken(value: string | undefined): string | undefined {
+export function validateTurnstileToken(value: string | undefined, skipInDev: boolean = false): string | undefined {
+  // Skip validation in development if requested
+  if (skipInDev && process.env.NODE_ENV === 'development') {
+    return undefined;
+  }
+  
   if (!value || value.trim().length === 0) {
     return 'Veuillez compléter la vérification CAPTCHA';
   }
@@ -79,7 +84,8 @@ export function validateTurnstileToken(value: string | undefined): string | unde
 // Validate a single field by name
 export function validateField(
   name: keyof ContactFormData,
-  value: string | boolean
+  value: string | boolean,
+  skipTurnstileInDev: boolean = false
 ): string | undefined {
   switch (name) {
     case 'firstname':
@@ -95,7 +101,7 @@ export function validateField(
     case 'consent':
       return validateConsent(value as boolean);
     case 'turnstileToken':
-      return validateTurnstileToken(value as string | undefined);
+      return validateTurnstileToken(value as string | undefined, skipTurnstileInDev);
     case 'company':
     case 'vatNumber':
     case 'propertyType':
@@ -106,7 +112,7 @@ export function validateField(
   }
 }
 
-export function validateContactForm(data: ContactFormData): ContactFormErrors {
+export function validateContactForm(data: ContactFormData, skipTurnstileInDev: boolean = false): ContactFormErrors {
   const errors: ContactFormErrors = {};
 
   if (!data.firstname || data.firstname.trim().length === 0) {
@@ -137,8 +143,11 @@ export function validateContactForm(data: ContactFormData): ContactFormErrors {
     errors.consent = FORM_MESSAGES.consentRequired;
   }
 
-  if (!data.turnstileToken || data.turnstileToken.trim().length === 0) {
-    errors.turnstileToken = 'Veuillez compléter la vérification CAPTCHA';
+  // Skip Turnstile validation in development if requested
+  if (!skipTurnstileInDev || process.env.NODE_ENV !== 'development') {
+    if (!data.turnstileToken || data.turnstileToken.trim().length === 0) {
+      errors.turnstileToken = 'Veuillez compléter la vérification CAPTCHA';
+    }
   }
 
   return errors;

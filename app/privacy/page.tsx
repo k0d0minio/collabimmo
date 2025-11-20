@@ -111,11 +111,7 @@ export default function PrivacyPage() {
 
           <div className="mt-8 pt-6 border-t border-gray-200">
             <p className="text-sm text-gray-500">
-              Dernière mise à jour : {new Date().toLocaleDateString('fr-FR', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-              })}
+              Dernière mise à jour : 1 janvier 2025
             </p>
           </div>
         </div>
