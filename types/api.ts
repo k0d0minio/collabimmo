@@ -20,6 +20,7 @@ export interface ContactFormRequest {
   vatNumber?: string;
   message: string;
   propertyType?: string;
+  consent?: boolean;
   turnstileToken?: string;
 }
 

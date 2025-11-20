@@ -40,6 +40,18 @@ export function FormField({
     }
   };
 
+  // Handle Select's onBlur to work with existing onBlur handler
+  const handleSelectBlur = (e: React.FocusEvent<HTMLButtonElement>) => {
+    if (onBlur) {
+      // Create a synthetic event-like object for compatibility
+      const syntheticEvent = {
+        target: { name },
+        currentTarget: { name },
+      } as React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>;
+      onBlur(syntheticEvent);
+    }
+  };
+
   // Convert empty string to undefined for Select (Radix shows placeholder when value is undefined)
   const selectValue = isSelect && (!value || value === '') ? undefined : value;
 
@@ -78,7 +90,7 @@ export function FormField({
               'px-4',
               error && 'border-red-500 focus:ring-red-500'
             )}
-            onBlur={onBlur}
+            onBlur={handleSelectBlur}
           >
             <SelectValue placeholder={placeholder || 'Sélectionnez une option'} />
           </SelectTrigger>
