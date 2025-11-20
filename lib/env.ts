@@ -42,10 +42,13 @@ function getPublicEnv(key: string, defaultValue?: string): () => string {
   return () => {
     // Access the environment variable directly
     // In Next.js, NEXT_PUBLIC_ vars are replaced at build time
-    const value = process.env[key];
+    // Use bracket notation to ensure we get the value correctly
+    const value = typeof process !== 'undefined' && process.env 
+      ? process.env[key] 
+      : undefined;
     
     // Trim whitespace if value exists
-    const trimmedValue = value?.trim() || '';
+    const trimmedValue = value ? String(value).trim() : '';
     
     if (defaultValue !== undefined) {
       // If we have a default, use it only if the value is truly empty
@@ -53,8 +56,14 @@ function getPublicEnv(key: string, defaultValue?: string): () => string {
       
       // Log warning in development if using default
       if (typeof window !== 'undefined' && !trimmedValue && defaultValue === '') {
+        // Check if the variable actually exists but our access method failed
+        const directCheck = typeof process !== 'undefined' && process.env 
+          ? process.env[key] 
+          : undefined;
+        
         console.warn(
           `[env] Missing public environment variable: ${key}\n` +
+          `Direct check: ${directCheck ? 'exists' : 'missing'}\n` +
           `This variable must be set at BUILD TIME for Next.js.\n` +
           `If you just set it, you need to rebuild your application.`
         );
@@ -129,7 +138,19 @@ export const publicEnv = {
   // Cloudflare Turnstile
   turnstile: {
     get siteKey() {
-      return getPublicEnv('NEXT_PUBLIC_TURNSTILE_SITE_KEY', '')();
+      // Direct access to ensure Next.js build-time replacement works correctly
+      // Next.js replaces NEXT_PUBLIC_* variables at build time, so direct property access is most reliable
+      if (typeof process !== 'undefined' && process.env) {
+        const value = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+        if (value) {
+          const trimmed = String(value).trim();
+          if (trimmed) {
+            return trimmed;
+          }
+        }
+      }
+      // Fallback: return empty string (will trigger warning in component)
+      return '';
     },
   },
   

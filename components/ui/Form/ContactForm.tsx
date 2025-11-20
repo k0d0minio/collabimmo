@@ -24,7 +24,16 @@ export function ContactForm({ className }: { className?: string }) {
     submit
   } = useContactForm();
 
-  const turnstileSiteKey = publicEnv.turnstile.siteKey;
+  // Get siteKey with fallback to direct access if getter fails
+  let turnstileSiteKey = publicEnv.turnstile.siteKey;
+  
+  // Fallback: Direct access if getter returned empty (workaround for Next.js build-time replacement)
+  if (!turnstileSiteKey && typeof process !== 'undefined' && process.env) {
+    const directValue = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+    if (directValue) {
+      turnstileSiteKey = String(directValue).trim();
+    }
+  }
 
   // Debug logging (only in browser console)
   if (typeof window !== 'undefined') {
@@ -32,7 +41,9 @@ export function ContactForm({ className }: { className?: string }) {
       exists: !!turnstileSiteKey,
       length: turnstileSiteKey?.length || 0,
       preview: turnstileSiteKey ? `${turnstileSiteKey.substring(0, 10)}...` : 'empty',
-      rawEnv: typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY : 'N/A (client-side)'
+      fromGetter: publicEnv.turnstile.siteKey || 'empty',
+      rawEnv: typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY : 'N/A (client-side)',
+      finalValue: turnstileSiteKey || 'empty'
     });
   }
 
