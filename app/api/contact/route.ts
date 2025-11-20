@@ -167,57 +167,58 @@ export async function POST(request: NextRequest) {
       try {
         body = await request.json();
       } catch (error) {
-      return NextResponse.json<ApiResponse<ContactFormResponse>>(
-        {
-          success: false,
-          error: 'Invalid JSON',
-          data: {
-            success: false,
-            message: 'Format de requête invalide.',
-          },
-        },
-        { status: 400 }
-      );
-    }
-
-    // Validate Turnstile token (skip in development)
-    const skipTurnstileValidation = env.isDevelopment();
-    
-    if (!skipTurnstileValidation) {
-      if (!body.turnstileToken) {
         return NextResponse.json<ApiResponse<ContactFormResponse>>(
           {
             success: false,
-            error: 'CAPTCHA validation failed',
-            message: 'Veuillez compléter la vérification CAPTCHA',
+            error: 'Invalid JSON',
             data: {
               success: false,
-              message: 'Veuillez compléter la vérification CAPTCHA',
+              message: 'Format de requête invalide.',
             },
           },
           { status: 400 }
         );
       }
 
-      const isTokenValid = await validateTurnstileToken(body.turnstileToken);
+      // Validate Turnstile token (skip in development)
+      const skipTurnstileValidation = env.isDevelopment();
       
-      if (!isTokenValid) {
-        const errorDetails = env.isDevelopment() 
-          ? 'Turnstile token validation failed. Check your secret key and token.'
-          : 'La vérification CAPTCHA a échoué. Veuillez réessayer.';
-        
-        return NextResponse.json<ApiResponse<ContactFormResponse>>(
-          {
-            success: false,
-            error: 'CAPTCHA validation failed',
-            message: errorDetails,
-            data: {
+      if (!skipTurnstileValidation) {
+        if (!body.turnstileToken) {
+          return NextResponse.json<ApiResponse<ContactFormResponse>>(
+            {
               success: false,
-              message: 'La vérification CAPTCHA a échoué. Veuillez réessayer.',
+              error: 'CAPTCHA validation failed',
+              message: 'Veuillez compléter la vérification CAPTCHA',
+              data: {
+                success: false,
+                message: 'Veuillez compléter la vérification CAPTCHA',
+              },
             },
-          },
-          { status: 400 }
-        );
+            { status: 400 }
+          );
+        }
+
+        const isTokenValid = await validateTurnstileToken(body.turnstileToken);
+        
+        if (!isTokenValid) {
+          const errorDetails = env.isDevelopment() 
+            ? 'Turnstile token validation failed. Check your secret key and token.'
+            : 'La vérification CAPTCHA a échoué. Veuillez réessayer.';
+          
+          return NextResponse.json<ApiResponse<ContactFormResponse>>(
+            {
+              success: false,
+              error: 'CAPTCHA validation failed',
+              message: errorDetails,
+              data: {
+                success: false,
+                message: 'La vérification CAPTCHA a échoué. Veuillez réessayer.',
+              },
+            },
+            { status: 400 }
+          );
+        }
       }
 
       // Validate and sanitize form data
@@ -234,33 +235,33 @@ export async function POST(request: NextRequest) {
         turnstileToken: body.turnstileToken || '',
       };
 
-    const errors = validateContactForm(formData, skipTurnstileValidation);
-    
-    if (Object.keys(errors).length > 0) {
-      // Create detailed error message listing all validation errors
-      const errorFields = Object.keys(errors);
-      const errorMessages = errorFields.map(field => {
-        const fieldName = getFieldDisplayName(field);
-        return `${fieldName}: ${errors[field as keyof typeof errors]}`;
-      });
+      const errors = validateContactForm(formData, skipTurnstileValidation);
       
+      if (Object.keys(errors).length > 0) {
+        // Create detailed error message listing all validation errors
+        const errorFields = Object.keys(errors);
+        const errorMessages = errorFields.map(field => {
+          const fieldName = getFieldDisplayName(field);
+          return `${fieldName}: ${errors[field as keyof typeof errors]}`;
+        });
+        
         const detailedMessage = `Veuillez corriger les erreurs suivantes: ${errorFields.map(f => getFieldDisplayName(f)).join(', ')}`;
-      
-      return NextResponse.json<ApiResponse<ContactFormResponse>>(
-        {
-          success: false,
-          error: 'Validation failed',
-          message: detailedMessage,
-          validationErrors: errors as Record<string, string>,
-          data: {
+        
+        return NextResponse.json<ApiResponse<ContactFormResponse>>(
+          {
             success: false,
-            message: 'Veuillez corriger les erreurs du formulaire',
+            error: 'Validation failed',
+            message: detailedMessage,
             validationErrors: errors as Record<string, string>,
+            data: {
+              success: false,
+              message: 'Veuillez corriger les erreurs du formulaire',
+              validationErrors: errors as Record<string, string>,
+            },
           },
-        },
-        { status: 400 }
-      );
-    }
+          { status: 400 }
+        );
+      }
 
       const resend = new Resend(env.resend.apiKey);
 
@@ -306,38 +307,38 @@ export async function POST(request: NextRequest) {
             },
           }
         );
-      
-      return NextResponse.json<ApiResponse<ContactFormResponse>>(
-        {
-          success: false,
-          error: 'Failed to send email',
-          message: errorMessage,
-          data: {
-            success: false,
-            message: 'Une erreur est survenue lors de l\'envoi du formulaire',
-          },
-        },
-        { status: 500 }
-      );
-    }
-
+        
         return NextResponse.json<ApiResponse<ContactFormResponse>>(
           {
-            success: true,
+            success: false,
+            error: 'Failed to send email',
+            message: 'Une erreur est survenue lors de l\'envoi du formulaire',
             data: {
-              success: true,
-              message: 'Votre message a été envoyé avec succès. Nous vous recontacterons rapidement.',
+              success: false,
+              message: 'Une erreur est survenue lors de l\'envoi du formulaire',
             },
           },
-          {
-            status: 200,
-            headers: {
-              'X-RateLimit-Limit': String(RATE_LIMIT_OPTIONS.maxRequests),
-              'X-RateLimit-Remaining': String(Math.max(0, rateLimitResult.remaining - 1)),
-              'X-RateLimit-Reset': String(rateLimitResult.resetTime),
-            },
-          }
+          { status: 500 }
         );
+      }
+
+      return NextResponse.json<ApiResponse<ContactFormResponse>>(
+        {
+          success: true,
+          data: {
+            success: true,
+            message: 'Votre message a été envoyé avec succès. Nous vous recontacterons rapidement.',
+          },
+        },
+        {
+          status: 200,
+          headers: {
+            'X-RateLimit-Limit': String(RATE_LIMIT_OPTIONS.maxRequests),
+            'X-RateLimit-Remaining': String(Math.max(0, rateLimitResult.remaining - 1)),
+            'X-RateLimit-Reset': String(rateLimitResult.resetTime),
+          },
+        }
+      );
     } catch (error) {
       // Log error (captured by Vercel logs)
       logError(

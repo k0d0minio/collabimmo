@@ -37,7 +37,7 @@ export async function submitContactForm(
 
     return {
       success: true,
-      data: result.data || result,
+      data: result.data!,
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Une erreur inattendue est survenue';
