@@ -1,21 +1,22 @@
 import type { Metadata } from 'next';
+import { publicEnv } from '@/lib/env';
 
 export const siteConfig = {
-  name: 'Collabimmo',
+  name: publicEnv.site.name,
   description: 'Votre partenaire privilégié pour des transactions immobilières sur mesure. Nous mettons en relation investisseurs, entreprises et propriétaires avec un accompagnement personnalisé.',
-  url: 'https://www.collabimmo.be',
+  url: publicEnv.site.url,
   ogImage: '/og-image.jpg',
   company: {
-    name: 'Collabimmo',
-    address: 'Rue de Namur 503 C, 6200 Châtelet',
-    email: 'info@collabimmo.be',
-    phone: '+32 71 300 081',
-    vat: 'BE 0801.347.286',
-    ipi: '519569',
-    website: 'www.collabimmo.be',
+    name: publicEnv.site.name,
+    address: publicEnv.company.address,
+    email: publicEnv.company.email,
+    phone: publicEnv.company.phone,
+    vat: publicEnv.company.vat,
+    ipi: publicEnv.company.ipi,
+    website: publicEnv.site.url.replace(/^https?:\/\//, '').replace(/^www\./, ''),
   },
   contact: {
-    email: 'info@collabimmo.be',
+    email: publicEnv.company.email,
   },
 } as const;
 

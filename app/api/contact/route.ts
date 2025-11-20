@@ -3,45 +3,78 @@ import { validateContactForm } from '@/lib/validations';
 import type { ContactFormRequest, ApiResponse, ContactFormResponse } from '@/types';
 import { Resend } from 'resend';
 import { EmailTemplate } from '@/components/email';
+import { env } from '@/lib/env';
+
+// Maximum request body size (10KB)
+const MAX_REQUEST_SIZE = 10 * 1024;
 
 async function validateTurnstileToken(token: string): Promise<boolean> {
-  const secretKey = process.env.TURNSTILE_SECRET_KEY;
-  
-  if (!secretKey) {
-    console.error('TURNSTILE_SECRET_KEY is not set');
-    return false;
-  }
-
   if (!token) {
     return false;
   }
 
   try {
-    const response = await fetch(
-      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          secret: secretKey,
-          response: token,
-        }),
-      }
-    );
+    const response = await fetch(env.turnstile.verifyUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        secret: env.turnstile.secretKey,
+        response: token,
+      }),
+    });
+
+    if (!response.ok) {
+      return false;
+    }
 
     const result = await response.json();
     return result.success === true;
   } catch (error) {
-    console.error('Turnstile validation error:', error);
+    // Log error in development, but don't expose details in production
+    if (env.isDevelopment()) {
+      console.error('Turnstile validation error:', error);
+    }
     return false;
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const body: ContactFormRequest = await request.json();
+    // Check request size
+    const contentLength = request.headers.get('content-length');
+    if (contentLength && parseInt(contentLength, 10) > MAX_REQUEST_SIZE) {
+      return NextResponse.json<ApiResponse<ContactFormResponse>>(
+        {
+          success: false,
+          error: 'Request too large',
+          data: {
+            success: false,
+            message: 'La requête est trop volumineuse. Veuillez réduire la taille de votre message.',
+          },
+        },
+        { status: 413 }
+      );
+    }
+
+    // Parse request body with error handling
+    let body: ContactFormRequest;
+    try {
+      body = await request.json();
+    } catch (error) {
+      return NextResponse.json<ApiResponse<ContactFormResponse>>(
+        {
+          success: false,
+          error: 'Invalid JSON',
+          data: {
+            success: false,
+            message: 'Format de requête invalide.',
+          },
+        },
+        { status: 400 }
+      );
+    }
 
     // Validate Turnstile token
     if (!body.turnstileToken) {
@@ -84,7 +117,8 @@ export async function POST(request: NextRequest) {
       vatNumber: body.vatNumber || '',
       message: body.message || '',
       propertyType: body.propertyType || '',
-      consent: true, // Assuming consent is handled client-side
+      consent: body.consent ?? false, // Use actual consent value from request
+      turnstileToken: body.turnstileToken || '',
     };
 
     const errors = validateContactForm(formData);
@@ -103,11 +137,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const resend = new Resend(process.env.RESEND_API_KEY);
+    const resend = new Resend(env.resend.apiKey);
 
     const { data, error } = await resend.emails.send({
-      from: 'Collabimmo <noreply@mail.jamienisbet.com>',
-      to: [process.env.EMAIL_TO!],
+      from: env.resend.fromEmail,
+      to: [env.emailTo],
       replyTo: formData.email,
       subject: `Nouveau message de contact - ${formData.firstname} ${formData.name}`,
       react: EmailTemplate({
@@ -123,7 +157,10 @@ export async function POST(request: NextRequest) {
     });
 
     if (error) {
-      console.error('Resend error:', error);
+      // Log error in development, but don't expose details in production
+      if (env.isDevelopment()) {
+        console.error('Resend error:', error);
+      }
       return NextResponse.json<ApiResponse<ContactFormResponse>>(
         {
           success: false,
@@ -148,12 +185,15 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error('Contact form submission error:', error);
+    // Log error in development, but don't expose details in production
+    if (env.isDevelopment()) {
+      console.error('Contact form submission error:', error);
+    }
     
     return NextResponse.json<ApiResponse<ContactFormResponse>>(
       {
         success: false,
-        error: error instanceof Error ? error.message : 'Une erreur inattendue est survenue',
+        error: 'Internal server error',
         data: {
           success: false,
           message: 'Une erreur est survenue lors de l\'envoi du formulaire',

@@ -31,6 +31,14 @@
   --input: #e5e7eb;
   --ring: var(--primary);
   
+  /* Popover (used by Select dropdown) */
+  --popover: #ffffff;
+  --popover-foreground: #171717;
+  
+  /* Destructive (for error states) */
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  
   /* Typography */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -72,6 +80,10 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

@@ -159,11 +159,11 @@ export function WhyChooseUsSection() {
             {specializations.map((item, index) => (
               <motion.li
                 key={index}
-                className="flex items-start"
+                className="flex items-start md:justify-center"
                 variants={fadeInUp}
                 custom={{ duration: duration / 1000 }}
               >
-                <svg className="w-6 h-6 text-primary mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-primary mr-3 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
                 <span className="text-gray-700">{item}</span>

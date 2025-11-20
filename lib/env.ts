@@ -1,0 +1,165 @@
+/**
+ * Environment variable validation and access utilities
+ * Uses lazy evaluation to ensure env vars are loaded when accessed
+ */
+
+/**
+ * Get a required environment variable, throwing an error if not set
+ * Uses lazy evaluation - only checks when accessed, not at module load time
+ */
+function getRequiredEnv(key: string): () => string {
+  return () => {
+    const value = process.env[key];
+    if (!value || value.trim() === '') {
+      // Provide helpful debugging info
+      const availableKeys = Object.keys(process.env)
+        .filter(k => k.includes('RESEND') || k.includes('EMAIL') || k.includes('TURNSTILE'))
+        .join(', ');
+      throw new Error(
+        `Missing required environment variable: ${key}\n` +
+        `Please check your .env.local file.\n` +
+        `Available related env vars: ${availableKeys || 'none found'}\n` +
+        `Current NODE_ENV: ${process.env.NODE_ENV || 'not set'}`
+      );
+    }
+    return value;
+  };
+}
+
+/**
+ * Get an optional environment variable with a default value
+ */
+function getOptionalEnv(key: string, defaultValue: string): () => string {
+  return () => process.env[key] || defaultValue;
+}
+
+/**
+ * Get a public (client-side) environment variable
+ */
+function getPublicEnv(key: string, defaultValue?: string): () => string {
+  return () => {
+    const value = process.env[key];
+    if (defaultValue !== undefined) {
+      return value || defaultValue;
+    }
+    if (!value) {
+      console.warn(`Missing public environment variable: ${key}. Using empty string as fallback.`);
+      return '';
+    }
+    return value;
+  };
+}
+
+/**
+ * Server-side environment variables (private)
+ * Uses getters for lazy evaluation - values are only checked when accessed
+ */
+export const env = {
+  // Resend Email Service
+  resend: {
+    get apiKey() {
+      return getRequiredEnv('RESEND_API_KEY')();
+    },
+    get fromEmail() {
+      return getRequiredEnv('RESEND_FROM_EMAIL')();
+    },
+  },
+  
+  // Email recipient
+  get emailTo() {
+    return getRequiredEnv('EMAIL_TO')();
+  },
+  
+  // Cloudflare Turnstile
+  turnstile: {
+    get secretKey() {
+      return getRequiredEnv('TURNSTILE_SECRET_KEY')();
+    },
+    get verifyUrl() {
+      return getOptionalEnv(
+        'TURNSTILE_VERIFY_URL',
+        'https://challenges.cloudflare.com/turnstile/v0/siteverify'
+      )();
+    },
+  },
+  
+  // Node environment
+  get nodeEnv() {
+    return getOptionalEnv('NODE_ENV', 'development')();
+  },
+  
+  // Utility functions
+  isDevelopment: () => process.env.NODE_ENV === 'development',
+  isProduction: () => process.env.NODE_ENV === 'production',
+} as const;
+
+/**
+ * Client-side environment variables (public)
+ * These are exposed to the browser via NEXT_PUBLIC_ prefix
+ * Uses getters for lazy evaluation
+ */
+export const publicEnv = {
+  // Cloudflare Turnstile
+  turnstile: {
+    get siteKey() {
+      return getPublicEnv('NEXT_PUBLIC_TURNSTILE_SITE_KEY', '')();
+    },
+  },
+  
+  // Site configuration
+  site: {
+    get url() {
+      return getPublicEnv('NEXT_PUBLIC_SITE_URL', 'https://www.collabimmo.be')();
+    },
+    get name() {
+      return getPublicEnv('NEXT_PUBLIC_SITE_NAME', 'Collabimmo')();
+    },
+  },
+  
+  // Company information (optional, with defaults)
+  company: {
+    get email() {
+      return getPublicEnv('NEXT_PUBLIC_COMPANY_EMAIL', 'info@collabimmo.be')();
+    },
+    get phone() {
+      return getPublicEnv('NEXT_PUBLIC_COMPANY_PHONE', '+32 71 300 081')();
+    },
+    get address() {
+      return getPublicEnv('NEXT_PUBLIC_COMPANY_ADDRESS', 'Rue de Namur 503 C, 6200 Châtelet')();
+    },
+    get vat() {
+      return getPublicEnv('NEXT_PUBLIC_COMPANY_VAT', 'BE 0801.347.286')();
+    },
+    get ipi() {
+      return getPublicEnv('NEXT_PUBLIC_COMPANY_IPI', '519569')();
+    },
+  },
+} as const;
+
+/**
+ * Debug helper to check environment variable status
+ * Useful for troubleshooting env var issues
+ */
+export function debugEnv(): {
+  resendApiKey: { exists: boolean; length: number };
+  resendFromEmail: { exists: boolean; length: number };
+  emailTo: { exists: boolean; length: number };
+  turnstileSecretKey: { exists: boolean; length: number };
+  allEnvKeys: string[];
+} {
+  const resendApiKey = process.env.RESEND_API_KEY || '';
+  const resendFromEmail = process.env.RESEND_FROM_EMAIL || '';
+  const emailTo = process.env.EMAIL_TO || '';
+  const turnstileSecretKey = process.env.TURNSTILE_SECRET_KEY || '';
+  
+  return {
+    resendApiKey: { exists: !!resendApiKey, length: resendApiKey.length },
+    resendFromEmail: { exists: !!resendFromEmail, length: resendFromEmail.length },
+    emailTo: { exists: !!emailTo, length: emailTo.length },
+    turnstileSecretKey: { exists: !!turnstileSecretKey, length: turnstileSecretKey.length },
+    allEnvKeys: Object.keys(process.env).filter(k => 
+      k.includes('RESEND') || k.includes('EMAIL') || k.includes('TURNSTILE')
+    ),
+  };
+}
+

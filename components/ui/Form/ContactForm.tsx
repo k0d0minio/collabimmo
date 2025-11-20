@@ -8,6 +8,7 @@ import { Turnstile } from "../Turnstile";
 import { useContactForm } from "@/hooks/useContactForm";
 import { PROPERTY_TYPES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { publicEnv } from "@/lib/env";
 
 export function ContactForm({ className }: { className?: string }) {
   const {
@@ -83,6 +84,7 @@ export function ContactForm({ className }: { className?: string }) {
           name="phone"
           label="Téléphone"
           type="tel"
+          required
           placeholder="+32 XXX XX XX XX"
           value={formData.phone}
           onChange={(
@@ -186,7 +188,7 @@ export function ContactForm({ className }: { className?: string }) {
 
       <div>
         <Turnstile
-          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
+          siteKey={publicEnv.turnstile.siteKey}
           resetKey={turnstileResetKey}
           onSuccess={updateTurnstileToken}
           onError={() => {

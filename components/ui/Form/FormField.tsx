@@ -1,6 +1,16 @@
-import { InputHTMLAttributes, TextareaHTMLAttributes, SelectHTMLAttributes } from 'react';
+import { InputHTMLAttributes, TextareaHTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 import type { FormFieldProps } from '@/types';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 export function FormField({
   name,
@@ -14,19 +24,33 @@ export function FormField({
   onBlur,
   options,
   ...props
-}: FormFieldProps & (InputHTMLAttributes<HTMLInputElement> | TextareaHTMLAttributes<HTMLTextAreaElement> | SelectHTMLAttributes<HTMLSelectElement>)) {
+}: FormFieldProps & (InputHTMLAttributes<HTMLInputElement> | TextareaHTMLAttributes<HTMLTextAreaElement>)) {
   const fieldId = `field-${name}`;
   const isTextarea = type === 'textarea';
   const isSelect = type === 'select';
 
+  // Handle Select's onValueChange to work with existing onChange handler
+  const handleSelectChange = (newValue: string) => {
+    if (onChange) {
+      // Create a synthetic event-like object for compatibility
+      const syntheticEvent = {
+        target: { value: newValue, name },
+      } as React.ChangeEvent<HTMLSelectElement>;
+      onChange(syntheticEvent);
+    }
+  };
+
+  // Convert empty string to undefined for Select (Radix shows placeholder when value is undefined)
+  const selectValue = isSelect && (!value || value === '') ? undefined : value;
+
   return (
     <div className="w-full">
-      <label htmlFor={fieldId} className="block text-sm font-medium mb-2">
+      <Label htmlFor={fieldId} className="block mb-2">
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}
-      </label>
+      </Label>
       {isTextarea ? (
-        <textarea
+        <Textarea
           id={fieldId}
           name={name}
           required={required}
@@ -35,36 +59,39 @@ export function FormField({
           onChange={onChange}
           onBlur={onBlur}
           className={cn(
-            'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary',
-            error ? 'border-red-500' : 'border-gray-300',
+            'px-4',
+            error && 'border-red-500 focus-visible:ring-red-500',
             'resize-none'
           )}
           rows={4}
           {...(props as TextareaHTMLAttributes<HTMLTextAreaElement>)}
         />
       ) : isSelect ? (
-        <select
-          id={fieldId}
-          name={name}
-          required={required}
-          value={value}
-          onChange={onChange}
-          onBlur={onBlur}
-          className={cn(
-            'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary',
-            error ? 'border-red-500' : 'border-gray-300'
-          )}
-          {...(props as SelectHTMLAttributes<HTMLSelectElement>)}
+        <Select
+          value={selectValue}
+          onValueChange={handleSelectChange}
         >
-          <option value="">Sélectionnez une option</option>
-          {options?.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger
+            id={fieldId}
+            name={name}
+            className={cn(
+              'px-4',
+              error && 'border-red-500 focus:ring-red-500'
+            )}
+            onBlur={onBlur}
+          >
+            <SelectValue placeholder={placeholder || 'Sélectionnez une option'} />
+          </SelectTrigger>
+          <SelectContent>
+            {options?.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       ) : (
-        <input
+        <Input
           id={fieldId}
           name={name}
           type={type}
@@ -74,8 +101,8 @@ export function FormField({
           onChange={onChange}
           onBlur={onBlur}
           className={cn(
-            'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary',
-            error ? 'border-red-500' : 'border-gray-300'
+            'px-4',
+            error && 'border-red-500 focus-visible:ring-red-500'
           )}
           {...(props as InputHTMLAttributes<HTMLInputElement>)}
         />

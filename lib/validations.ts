@@ -1,6 +1,25 @@
 import { FORM_MESSAGES } from './constants';
 import type { ContactFormData, ContactFormErrors } from '@/types';
 
+// Shared validation regex patterns
+export const VALIDATION_PATTERNS = {
+  email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+  phone: /^[\d\s\-\+\(\)]+$/,
+} as const;
+
+// Shared validation utility functions
+export function isValidEmailFormat(email: string): boolean {
+  return VALIDATION_PATTERNS.email.test(email);
+}
+
+export function isValidPhoneFormat(phone: string): boolean {
+  if (!phone || phone.trim().length === 0) {
+    return false; // Phone is required
+  }
+  const digitsOnly = phone.replace(/\D/g, '');
+  return VALIDATION_PATTERNS.phone.test(phone) && digitsOnly.length >= 9;
+}
+
 // Individual field validation functions
 export function validateFirstname(value: string): string | undefined {
   if (!value || value.trim().length === 0) {
@@ -20,7 +39,7 @@ export function validateEmail(value: string): string | undefined {
   if (!value || value.trim().length === 0) {
     return FORM_MESSAGES.required;
   }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+  if (!isValidEmailFormat(value)) {
     return FORM_MESSAGES.invalidEmail;
   }
   return undefined;
@@ -28,11 +47,9 @@ export function validateEmail(value: string): string | undefined {
 
 export function validatePhone(value: string): string | undefined {
   if (!value || value.trim().length === 0) {
-    return undefined; // Phone is optional
+    return FORM_MESSAGES.required;
   }
-  const phoneRegex = /^[\d\s\-\+\(\)]+$/;
-  const digitsOnly = value.replace(/\D/g, '');
-  if (!phoneRegex.test(value) || digitsOnly.length < 9) {
+  if (!isValidPhoneFormat(value)) {
     return FORM_MESSAGES.invalidPhone;
   }
   return undefined;
@@ -102,16 +119,14 @@ export function validateContactForm(data: ContactFormData): ContactFormErrors {
 
   if (!data.email || data.email.trim().length === 0) {
     errors.email = FORM_MESSAGES.required;
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+  } else if (!isValidEmailFormat(data.email)) {
     errors.email = FORM_MESSAGES.invalidEmail;
   }
 
-  if (data.phone && data.phone.trim().length > 0) {
-    const phoneRegex = /^[\d\s\-\+\(\)]+$/;
-    const digitsOnly = data.phone.replace(/\D/g, '');
-    if (!phoneRegex.test(data.phone) || digitsOnly.length < 9) {
-      errors.phone = FORM_MESSAGES.invalidPhone;
-    }
+  if (!data.phone || data.phone.trim().length === 0) {
+    errors.phone = FORM_MESSAGES.required;
+  } else if (!isValidPhoneFormat(data.phone)) {
+    errors.phone = FORM_MESSAGES.invalidPhone;
   }
 
   if (!data.message || data.message.trim().length === 0) {

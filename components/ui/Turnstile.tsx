@@ -1,7 +1,7 @@
 "use client";
 
 import { Turnstile as ReactTurnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 
 interface TurnstileProps {
   onSuccess: (token: string) => void;
@@ -19,6 +19,11 @@ export function Turnstile({
   resetKey,
 }: TurnstileProps) {
   const turnstileRef = useRef<TurnstileInstance>(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     if (resetKey !== undefined && turnstileRef.current) {
@@ -38,8 +43,14 @@ export function Turnstile({
     onExpire?.();
   };
 
-  if (!siteKey) {
-    return null;
+  if (!siteKey || !isMounted) {
+    return (
+      <div
+        id="cf-turnstile"
+        style={{ width: "300px", height: "65px" }}
+        aria-label="Loading security verification"
+      />
+    );
   }
 
   return (

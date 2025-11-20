@@ -29,14 +29,14 @@ export function HeroSection() {
           variants={fadeInUp}
           custom={{ duration: duration / 1000 }}
         >
-          Trouvez le bien professionnel qui correspond à votre projet.
+          Aucun bien, aucun secteur, aucun défi ne nous limite.
         </motion.h1>
         <motion.p
           className="text-xl md:text-2xl mb-8 text-gray-200 max-w-3xl"
           variants={fadeInUp}
           custom={{ duration: duration / 1000 }}
         >
-          Bureaux, commerces, entrepôts, immeubles de rapport : Collabimmo vous accompagne avec des opportunités adaptées à vos besoins.
+Bureaux, commerces, entrepôts, terrains à bâtir, agricoles, bois & forêts, projets off-market… dites-nous ce que vous cherchez, nous le trouvons.
         </motion.p>
         <motion.div variants={fadeInUp} custom={{ duration: duration / 1000 }}>
           <CTA size="lg" />

@@ -33,7 +33,8 @@ export function AboutSection() {
           variants={fadeInUp}
           custom={{ duration: duration / 1000 }}
         >
-          Votre partenaire privilégié pour des transactions immobilières sur mesure. Nous mettons en relation investisseurs, entreprises et propriétaires avec un accompagnement personnalisé.
+De l’immeuble de rapport aux terrains en développement, agricoles ou forestiers, Collabimmo vous donne accès à toutes les opportunités du marché.
+Notre équipe de chasseurs identifie et sécurise le bien qu’il vous faut, où qu’il se trouve.
         </motion.p>
         
         <motion.div
