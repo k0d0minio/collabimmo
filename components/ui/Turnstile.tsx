@@ -43,13 +43,39 @@ export function Turnstile({
     onExpire?.();
   };
 
-  if (!siteKey || !isMounted) {
+  useEffect(() => {
+    if (isMounted && !siteKey) {
+      console.error(
+        'Turnstile: Missing siteKey. Please set NEXT_PUBLIC_TURNSTILE_SITE_KEY environment variable.'
+      );
+    }
+  }, [isMounted, siteKey]);
+
+  if (!isMounted) {
     return (
       <div
         id="cf-turnstile"
         style={{ width: "300px", height: "65px" }}
         aria-label="Loading security verification"
       />
+    );
+  }
+
+  if (!siteKey) {
+    return (
+      <div
+        className="p-4 border border-red-300 rounded-md bg-red-50"
+        role="alert"
+      >
+        <p className="text-sm text-red-800">
+          ⚠️ Security verification is not configured. Please contact the site administrator.
+        </p>
+        {process.env.NODE_ENV === 'development' && (
+          <p className="text-xs text-red-600 mt-1">
+            Missing NEXT_PUBLIC_TURNSTILE_SITE_KEY environment variable
+          </p>
+        )}
+      </div>
     );
   }
 
