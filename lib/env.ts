@@ -35,18 +35,45 @@ function getOptionalEnv(key: string, defaultValue: string): () => string {
 
 /**
  * Get a public (client-side) environment variable
+ * Note: NEXT_PUBLIC_ variables are embedded at BUILD TIME in Next.js
+ * If the variable is set after building, you must rebuild the application
  */
 function getPublicEnv(key: string, defaultValue?: string): () => string {
   return () => {
+    // Access the environment variable directly
+    // In Next.js, NEXT_PUBLIC_ vars are replaced at build time
     const value = process.env[key];
+    
+    // Trim whitespace if value exists
+    const trimmedValue = value?.trim() || '';
+    
     if (defaultValue !== undefined) {
-      return value || defaultValue;
+      // If we have a default, use it only if the value is truly empty
+      const result = trimmedValue || defaultValue;
+      
+      // Log warning in development if using default
+      if (typeof window !== 'undefined' && !trimmedValue && defaultValue === '') {
+        console.warn(
+          `[env] Missing public environment variable: ${key}\n` +
+          `This variable must be set at BUILD TIME for Next.js.\n` +
+          `If you just set it, you need to rebuild your application.`
+        );
+      }
+      
+      return result;
     }
-    if (!value) {
-      console.warn(`Missing public environment variable: ${key}. Using empty string as fallback.`);
+    
+    if (!trimmedValue) {
+      if (typeof window !== 'undefined') {
+        console.warn(
+          `[env] Missing public environment variable: ${key}. Using empty string as fallback.\n` +
+          `Note: NEXT_PUBLIC_ variables must be available at BUILD TIME in Next.js.`
+        );
+      }
       return '';
     }
-    return value;
+    
+    return trimmedValue;
   };
 }
 

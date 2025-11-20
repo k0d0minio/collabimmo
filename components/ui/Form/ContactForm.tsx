@@ -24,6 +24,18 @@ export function ContactForm({ className }: { className?: string }) {
     submit
   } = useContactForm();
 
+  const turnstileSiteKey = publicEnv.turnstile.siteKey;
+
+  // Debug logging (only in browser console)
+  if (typeof window !== 'undefined') {
+    console.log('[ContactForm] Turnstile siteKey:', {
+      exists: !!turnstileSiteKey,
+      length: turnstileSiteKey?.length || 0,
+      preview: turnstileSiteKey ? `${turnstileSiteKey.substring(0, 10)}...` : 'empty',
+      rawEnv: typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY : 'N/A (client-side)'
+    });
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     submit();
@@ -188,7 +200,7 @@ export function ContactForm({ className }: { className?: string }) {
 
       <div>
         <Turnstile
-          siteKey={publicEnv.turnstile.siteKey}
+          siteKey={turnstileSiteKey}
           resetKey={turnstileResetKey}
           onSuccess={updateTurnstileToken}
           onError={() => {
