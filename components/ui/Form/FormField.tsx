@@ -1,137 +1,142 @@
-import { InputHTMLAttributes, TextareaHTMLAttributes } from 'react';
-import { cn } from '@/lib/utils';
-import type { FormFieldProps } from '@/types';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
+import type { InputHTMLAttributes, TextareaHTMLAttributes } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
+import type { FormFieldProps } from "@/types";
 
 export function FormField({
-  name,
-  label,
-  type = 'text',
-  required = false,
-  placeholder,
-  error,
-  value,
-  onChange,
-  onBlur,
-  options,
-  ...props
-}: FormFieldProps & (InputHTMLAttributes<HTMLInputElement> | TextareaHTMLAttributes<HTMLTextAreaElement>)) {
-  const fieldId = `field-${name}`;
-  const isTextarea = type === 'textarea';
-  const isSelect = type === 'select';
+	name,
+	label,
+	type = "text",
+	required = false,
+	placeholder,
+	error,
+	value,
+	onChange,
+	onBlur,
+	options,
+	...props
+}: FormFieldProps &
+	(
+		| InputHTMLAttributes<HTMLInputElement>
+		| TextareaHTMLAttributes<HTMLTextAreaElement>
+	)) {
+	const fieldId = `field-${name}`;
+	const isTextarea = type === "textarea";
+	const isSelect = type === "select";
 
-  // Handle Select's onValueChange to work with existing onChange handler
-  const handleSelectChange = (newValue: string) => {
-    if (onChange) {
-      // Create a synthetic event-like object for compatibility
-      const syntheticEvent = {
-        target: { value: newValue, name },
-      } as React.ChangeEvent<HTMLSelectElement>;
-      onChange(syntheticEvent);
-    }
-  };
+	// Handle Select's onValueChange to work with existing onChange handler
+	const handleSelectChange = (newValue: string) => {
+		if (onChange) {
+			// Create a synthetic event-like object for compatibility
+			const syntheticEvent = {
+				target: { value: newValue, name },
+			} as React.ChangeEvent<HTMLSelectElement>;
+			onChange(syntheticEvent);
+		}
+	};
 
-  // Handle Select's onBlur to work with existing onBlur handler
-  const handleSelectBlur = (e: React.FocusEvent<HTMLButtonElement>) => {
-    if (onBlur) {
-      // Create a synthetic event-like object for compatibility
-      const syntheticEvent = {
-        target: { name },
-        currentTarget: { name },
-      } as React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>;
-      onBlur(syntheticEvent);
-    }
-  };
+	// Handle Select's onBlur to work with existing onBlur handler
+	const handleSelectBlur = (_e: React.FocusEvent<HTMLButtonElement>) => {
+		if (onBlur) {
+			// Create a synthetic event-like object for compatibility
+			const syntheticEvent = {
+				target: { name },
+				currentTarget: { name },
+			} as React.FocusEvent<
+				HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+			>;
+			onBlur(syntheticEvent);
+		}
+	};
 
-  // Convert empty string to undefined for Select (Radix shows placeholder when value is undefined)
-  const selectValue = isSelect && (!value || value === '') ? undefined : value;
-  const errorId = `${fieldId}-error`;
+	// Convert empty string to undefined for Select (Radix shows placeholder when value is undefined)
+	const selectValue = isSelect && (!value || value === "") ? undefined : value;
+	const errorId = `${fieldId}-error`;
 
-  return (
-    <div className="w-full">
-      <Label htmlFor={fieldId} className="block mb-2">
-        {label}
-        {required && <span className="text-red-500 ml-1" aria-label="requis">*</span>}
-      </Label>
-      {isTextarea ? (
-        <Textarea
-          id={fieldId}
-          name={name}
-          required={required}
-          placeholder={placeholder}
-          value={value}
-          onChange={onChange}
-          onBlur={onBlur}
-          aria-invalid={error ? 'true' : 'false'}
-          aria-describedby={error ? errorId : undefined}
-          className={cn(
-            'px-4',
-            error && 'border-red-500 focus-visible:ring-red-500',
-            'resize-none'
-          )}
-          rows={4}
-          {...(props as TextareaHTMLAttributes<HTMLTextAreaElement>)}
-        />
-      ) : isSelect ? (
-        <Select
-          value={selectValue}
-          onValueChange={handleSelectChange}
-        >
-          <SelectTrigger
-            id={fieldId}
-            name={name}
-            aria-invalid={error ? 'true' : 'false'}
-            aria-describedby={error ? errorId : undefined}
-            className={cn(
-              'px-4',
-              error && 'border-red-500 focus:ring-red-500'
-            )}
-            onBlur={handleSelectBlur}
-          >
-            <SelectValue placeholder={placeholder || 'Sélectionnez une option'} />
-          </SelectTrigger>
-          <SelectContent>
-            {options?.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      ) : (
-        <Input
-          id={fieldId}
-          name={name}
-          type={type}
-          required={required}
-          placeholder={placeholder}
-          value={value}
-          onChange={onChange}
-          onBlur={onBlur}
-          aria-invalid={error ? 'true' : 'false'}
-          aria-describedby={error ? errorId : undefined}
-          className={cn(
-            'px-4',
-            error && 'border-red-500 focus-visible:ring-red-500'
-          )}
-          {...(props as InputHTMLAttributes<HTMLInputElement>)}
-        />
-      )}
-      {error && (
-        <p id={errorId} className="mt-1 text-sm text-red-500" role="alert">
-          {error}
-        </p>
-      )}
-    </div>
-  );
+	return (
+		<div className="w-full">
+			<Label htmlFor={fieldId} className="block mb-2">
+				{label}
+				{required && (
+					<span className="text-red-500 ml-1" title="requis">
+						*
+					</span>
+				)}
+			</Label>
+			{isTextarea ? (
+				<Textarea
+					id={fieldId}
+					name={name}
+					required={required}
+					placeholder={placeholder}
+					value={value}
+					onChange={onChange}
+					onBlur={onBlur}
+					aria-invalid={error ? "true" : "false"}
+					aria-describedby={error ? errorId : undefined}
+					className={cn(
+						"px-4",
+						error && "border-red-500 focus-visible:ring-red-500",
+						"resize-none",
+					)}
+					rows={4}
+					{...(props as TextareaHTMLAttributes<HTMLTextAreaElement>)}
+				/>
+			) : isSelect ? (
+				<Select value={selectValue} onValueChange={handleSelectChange}>
+					<SelectTrigger
+						id={fieldId}
+						name={name}
+						aria-invalid={error ? "true" : "false"}
+						aria-describedby={error ? errorId : undefined}
+						className={cn("px-4", error && "border-red-500 focus:ring-red-500")}
+						onBlur={handleSelectBlur}
+					>
+						<SelectValue
+							placeholder={placeholder || "Sélectionnez une option"}
+						/>
+					</SelectTrigger>
+					<SelectContent>
+						{options?.map((option) => (
+							<SelectItem key={option.value} value={option.value}>
+								{option.label}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
+			) : (
+				<Input
+					id={fieldId}
+					name={name}
+					type={type}
+					required={required}
+					placeholder={placeholder}
+					value={value}
+					onChange={onChange}
+					onBlur={onBlur}
+					aria-invalid={error ? "true" : "false"}
+					aria-describedby={error ? errorId : undefined}
+					className={cn(
+						"px-4",
+						error && "border-red-500 focus-visible:ring-red-500",
+					)}
+					{...(props as InputHTMLAttributes<HTMLInputElement>)}
+				/>
+			)}
+			{error && (
+				<p id={errorId} className="mt-1 text-sm text-red-500" role="alert">
+					{error}
+				</p>
+			)}
+		</div>
+	);
 }
-

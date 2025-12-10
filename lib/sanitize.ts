@@ -9,14 +9,14 @@
  * @returns Escaped text safe for HTML rendering
  */
 export function escapeHtml(text: string): string {
-  const map: Record<string, string> = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#039;',
-  };
-  return text.replace(/[&<>"']/g, (m) => map[m]);
+	const map: Record<string, string> = {
+		"&": "&amp;",
+		"<": "&lt;",
+		">": "&gt;",
+		'"': "&quot;",
+		"'": "&#039;",
+	};
+	return text.replace(/[&<>"']/g, (m) => map[m]);
 }
 
 /**
@@ -25,8 +25,8 @@ export function escapeHtml(text: string): string {
  * @returns Sanitized text
  */
 export function sanitizeText(input: string | undefined | null): string {
-  if (!input) return '';
-  return escapeHtml(String(input).trim());
+	if (!input) return "";
+	return escapeHtml(String(input).trim());
 }
 
 /**
@@ -35,7 +35,6 @@ export function sanitizeText(input: string | undefined | null): string {
  * @returns Sanitized email
  */
 export function sanitizeEmail(email: string | undefined | null): string {
-  if (!email) return '';
-  return String(email).trim().toLowerCase();
+	if (!email) return "";
+	return String(email).trim().toLowerCase();
 }
-

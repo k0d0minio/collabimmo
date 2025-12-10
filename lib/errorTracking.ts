@@ -1,6 +1,6 @@
 /**
  * Error logging utilities
- * 
+ *
  * Logs errors to console, which are automatically captured by Vercel logs.
  * For server-side errors, these will appear in Vercel's function logs.
  */
@@ -11,17 +11,20 @@
  * @param error - Error to log
  * @param context - Additional context about the error
  */
-export function logError(error: Error | unknown, context?: Record<string, unknown>): void {
-  // Server-side only - logs are captured by Vercel
-  if (typeof window === 'undefined') {
-    const errorObj = error instanceof Error ? error : new Error(String(error));
-    // eslint-disable-next-line no-console
-    console.error('[API Error]', {
-      message: errorObj.message,
-      stack: errorObj.stack,
-      context,
-    });
-  }
+export function logError(
+	error: Error | unknown,
+	context?: Record<string, unknown>,
+): void {
+	// Server-side only - logs are captured by Vercel
+	if (typeof window === "undefined") {
+		const errorObj = error instanceof Error ? error : new Error(String(error));
+		// eslint-disable-next-line no-console
+		console.error("[API Error]", {
+			message: errorObj.message,
+			stack: errorObj.stack,
+			context,
+		});
+	}
 }
 
 /**
@@ -31,15 +34,19 @@ export function logError(error: Error | unknown, context?: Record<string, unknow
  * @param context - Additional context
  */
 export function logMessage(
-  message: string,
-  level: 'info' | 'warning' | 'error' = 'info',
-  context?: Record<string, unknown>
+	message: string,
+	level: "info" | "warning" | "error" = "info",
+	context?: Record<string, unknown>,
 ): void {
-  // Server-side only - logs are captured by Vercel
-  if (typeof window === 'undefined') {
-    const logFn = level === 'error' ? console.error : level === 'warning' ? console.warn : console.log;
-    // eslint-disable-next-line no-console
-    logFn(`[API ${level.toUpperCase()}]`, message, context);
-  }
+	// Server-side only - logs are captured by Vercel
+	if (typeof window === "undefined") {
+		const logFn =
+			level === "error"
+				? console.error
+				: level === "warning"
+					? console.warn
+					: console.log;
+		// eslint-disable-next-line no-console
+		logFn(`[API ${level.toUpperCase()}]`, message, context);
+	}
 }
-
