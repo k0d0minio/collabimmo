@@ -45,6 +45,9 @@ Site web professionnel pour Collabimmo - Votre partenaire privilégié pour des 
    RESEND_FROM_EMAIL=noreply@votre-domaine.com
    EMAIL_TO=contact@votre-domaine.com
    TURNSTILE_SECRET_KEY=votre_clé_secrète_turnstile
+
+   # Espace admin / CRM (protège /admin)
+   ADMIN_PASSWORD=un_mot_de_passe_fort
    
    # Client-side (publiques - intégrées au build)
    NEXT_PUBLIC_TURNSTILE_SITE_KEY=votre_clé_publique_turnstile
@@ -88,6 +91,25 @@ Site web professionnel pour Collabimmo - Votre partenaire privilégié pour des 
 2. Aller dans Turnstile et créer un site
 3. Récupérer la clé publique (Site Key) et la clé secrète (Secret Key)
 4. Configurer `NEXT_PUBLIC_TURNSTILE_SITE_KEY` et `TURNSTILE_SECRET_KEY`
+
+## Espace admin (CRM)
+
+Un CRM léger de démonstration est disponible sous `/admin`. Il regroupe un
+tableau de bord, une boîte de réception, un suivi des leads, un pipeline
+commercial, un portefeuille de biens, un carnet de contacts, un agenda et des
+rapports.
+
+- **Accès** : rendez-vous sur `/admin`. L'accès est protégé par un mot de passe
+  partagé défini via la variable d'environnement `ADMIN_PASSWORD`. Une session
+  authentifiée est conservée dans un cookie `httpOnly` pendant 12 heures.
+- **Données** : entièrement fictives et embarquées côté application. Cette
+  section n'est **pas** connectée aux données réelles du site public ni à une
+  base de données — il s'agit d'une démonstration. Les modifications
+  (déplacement de leads, lecture de messages, etc.) sont conservées en mémoire
+  et réinitialisées au rechargement de la page.
+
+> Si `ADMIN_PASSWORD` n'est pas définie, un mot de passe de démonstration par
+> défaut est utilisé. Définissez toujours `ADMIN_PASSWORD` en production.
 
 ## Déploiement
 
