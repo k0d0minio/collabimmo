@@ -48,6 +48,14 @@ Site web professionnel pour Collabimmo - Votre partenaire privilégié pour des 
 
    # Espace admin / CRM (protège /admin)
    ADMIN_PASSWORD=un_mot_de_passe_fort
+
+   # Intégration WhatsApp (optionnelles)
+   # Secret partagé vérifié sur le webhook entrant. Si absent, la vérification
+   # est ignorée en développement mais le webhook est refusé en production.
+   WHATSAPP_WEBHOOK_SECRET=un_secret_fort
+   # Clé Anthropic pour l'analyse IA des messages. Si absente, l'analyse
+   # bascule sur une heuristique hors-ligne (aucun coût, aucun appel réseau).
+   ANTHROPIC_API_KEY=votre_clé_anthropic
    
    # Client-side (publiques - intégrées au build)
    NEXT_PUBLIC_TURNSTILE_SITE_KEY=votre_clé_publique_turnstile
