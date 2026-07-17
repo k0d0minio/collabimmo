@@ -107,6 +107,23 @@ export const env = {
 		},
 	},
 
+	// WhatsApp integration (inbound webhook)
+	// Optional: when unset, the webhook secret check is skipped in development
+	// (mirrors the Turnstile dev-skip). Always set this in production.
+	whatsapp: {
+		get webhookSecret() {
+			return getOptionalEnv("WHATSAPP_WEBHOOK_SECRET", "")();
+		},
+	},
+
+	// Anthropic (AI analysis of WhatsApp messages)
+	// Optional: when unset, message analysis falls back to an offline heuristic.
+	anthropic: {
+		get apiKey() {
+			return getOptionalEnv("ANTHROPIC_API_KEY", "")();
+		},
+	},
+
 	// Node environment
 	get nodeEnv() {
 		return getOptionalEnv("NODE_ENV", "development")();

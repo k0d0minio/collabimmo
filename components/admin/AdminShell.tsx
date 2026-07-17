@@ -10,6 +10,7 @@ import {
 	LayoutDashboard,
 	LogOut,
 	Menu,
+	MessageCircle,
 	Search,
 	Users,
 	X,
@@ -29,6 +30,7 @@ type NavItem = {
 const NAV_ITEMS: NavItem[] = [
 	{ href: "/admin", label: "Tableau de bord", icon: LayoutDashboard },
 	{ href: "/admin/inbox", label: "Boîte de réception", icon: Inbox },
+	{ href: "/admin/whatsapp", label: "WhatsApp", icon: MessageCircle },
 	{ href: "/admin/leads", label: "Leads", icon: Users },
 	{ href: "/admin/deals", label: "Pipeline", icon: Columns3 },
 	{ href: "/admin/properties", label: "Portefeuille", icon: Building2 },
