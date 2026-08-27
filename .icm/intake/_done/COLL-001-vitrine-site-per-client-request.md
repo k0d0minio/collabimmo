@@ -1,3 +1,6 @@
+> Dropped: already built — the vitrine shipped Nov 2025 (single sober page, contact-form CTA,
+> Turnstile + Resend), months before the 2026-08-11 estate sweep cut this ticket. 2026-08-27 estate ticket audit.
+
 # COLL-001 · Build the collabimmo.be vitrine per the client's request
 
 | | |
