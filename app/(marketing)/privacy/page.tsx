@@ -69,7 +69,7 @@ export default function PrivacyPage() {
 							5. Partage des Données
 						</h2>
 						<p className="text-gray-700 leading-relaxed">
-							Nous ne vendons, n'échangeons ni ne louons vos informations
+							Nous ne vendons, n&apos;échangeons ni ne louons vos informations
 							personnelles à des tiers. Nous pouvons partager vos informations
 							uniquement dans les cas suivants :
 						</p>

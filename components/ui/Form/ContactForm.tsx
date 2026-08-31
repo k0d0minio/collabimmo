@@ -183,7 +183,7 @@ export function ContactForm({ className }: { className?: string }) {
 					className="mt-1 h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
 				/>
 				<label htmlFor="consent" className="ml-2 text-sm text-gray-700">
-					J'accepte la{" "}
+					J&apos;accepte la{" "}
 					<Link
 						href="/privacy"
 						className="text-primary underline hover:text-primary/80"

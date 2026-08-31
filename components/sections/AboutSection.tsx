@@ -43,7 +43,7 @@ export function AboutSection() {
 						toutes les opportunités du marché immobilier professionnel — des
 						immeubles de rapport aux terrains en développement, des actifs
 						agricoles aux bois et forêts. Notre équipe de chasseurs identifie,
-						sécurise et accompagne l'actif qu'il vous faut, où qu'il soit.
+						sécurise et accompagne l&apos;actif qu&apos;il vous faut, où qu&apos;il soit.
 					</motion.p>
 
 					<motion.div
