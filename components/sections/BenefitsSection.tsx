@@ -87,7 +87,7 @@ export function BenefitsSection() {
 					variants={fadeInUp}
 					custom={{ duration: duration / 1000, delay: 0.3 }}
 				>
-					<CTA>Passer à l'action</CTA>
+					<CTA>Passer à l&apos;action</CTA>
 				</motion.div>
 			</motion.div>
 		</Section>

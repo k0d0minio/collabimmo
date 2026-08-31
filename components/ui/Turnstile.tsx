@@ -4,7 +4,7 @@ import {
 	Turnstile as ReactTurnstile,
 	type TurnstileInstance,
 } from "@marsidev/react-turnstile";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 interface TurnstileProps {
 	onSuccess: (token: string) => void;
@@ -22,16 +22,16 @@ export function Turnstile({
 	resetKey,
 }: TurnstileProps) {
 	const turnstileRef = useRef<TurnstileInstance>(null);
-	const [isMounted, setIsMounted] = useState(false);
+	// Tracks the last resetKey we acted on, so the widget is only reset when the
+	// key actually changes and not on the initial mount.
+	const lastResetKey = useRef(resetKey);
 
 	useEffect(() => {
-		setIsMounted(true);
-	}, []);
-
-	useEffect(() => {
-		if (resetKey !== undefined && turnstileRef.current) {
-			turnstileRef.current.reset();
+		if (resetKey === lastResetKey.current) {
+			return;
 		}
+		lastResetKey.current = resetKey;
+		turnstileRef.current?.reset();
 	}, [resetKey]);
 
 	const handleSuccess = (token: string) => {
@@ -48,10 +48,6 @@ export function Turnstile({
 
 	// Note: siteKey validation happens at build time
 	// In production, missing siteKey will show error UI instead of console logs
-
-	if (!isMounted) {
-		return <div id="cf-turnstile" style={{ width: "300px", height: "65px" }} />;
-	}
 
 	if (!siteKey) {
 		return (
@@ -72,6 +68,11 @@ export function Turnstile({
 		);
 	}
 
+	// Rendered unconditionally: @marsidev/react-turnstile emits a bare
+	// <div id="cf-turnstile"> sized to the widget on the server and on the first
+	// client render, and only touches `document` from its own effects. That is
+	// byte-for-byte the placeholder this component used to render behind an
+	// isMounted flag, so there is no hydration mismatch to guard against.
 	return (
 		<ReactTurnstile
 			ref={turnstileRef}
